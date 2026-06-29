@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ArcSmith - ArcPy Toolbox Utilities for ArcGIS Pro</title>
+
+<!-- Primary SEO -->
+<meta name="description" content="ArcSmith is a free, open-source Python library for building ArcGIS Pro Python toolboxes (.pyt). Read parameter state, build quoted SQL WHERE clauses, apply symbology, and manage workspaces on top of arcpy.">
+<meta name="keywords" content="ArcSmith, arcpy, ArcGIS Pro, Python toolbox, .pyt, geoprocessing, GIS, symbology, SQL WHERE clause, parameter validation, feature class">
+<meta name="author" content="HFM3">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1E2B3C">
+<link rel="canonical" href="https://arcsmith.dev/">
+
+<!-- Icons -->
+<link rel="icon" type="image/svg+xml" href="/docs/stylesheets/arcsmith-icon.svg">
+<link rel="icon" type="image/png" sizes="512x512" href="/docs/assets/images/favicon.png">
+<link rel="icon" type="image/x-icon" href="/docs/assets/images/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/docs/assets/images/apple-touch-icon.png">
+
+<!-- Open Graph (Facebook, LinkedIn, Slack, etc.) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ArcSmith">
+<meta property="og:title" content="ArcSmith - ArcPy Toolbox Utilities for ArcGIS Pro">
+<meta property="og:description" content="A free, open-source Python library for building ArcGIS Pro Python toolboxes (.pyt). Parameter state, SQL WHERE clauses, symbology, and workspace management on top of arcpy.">
+<meta property="og:url" content="https://arcsmith.dev/">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://arcsmith.dev/docs/images/social-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ArcSmith - A tool builder's toolbox. ArcPy toolbox utilities.">
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ArcSmith - ArcPy Toolbox Utilities for ArcGIS Pro">
+<meta name="twitter:description" content="A free, open-source Python library for building ArcGIS Pro Python toolboxes (.pyt), built on top of arcpy.">
+<meta name="twitter:image" content="https://arcsmith.dev/docs/images/social-card.png">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ArcSmith",
+  "description": "A free, open-source Python library for building ArcGIS Pro Python toolboxes (.pyt). It works on top of arcpy, handling parameter state, quoted SQL WHERE clauses, symbology, and workspace management.",
+  "url": "https://arcsmith.dev/",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Windows",
+  "softwareRequirements": "ArcGIS Pro, arcpy",
+  "programmingLanguage": "Python",
+  "license": "https://www.gnu.org/licenses/gpl-3.0.html",
+  "isAccessibleForFree": true,
+  "author": {
+    "@type": "Person",
+    "name": "HFM3",
+    "url": "https://github.com/HFM3"
+  }
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --navy:       #1E2B3C;
+  --slate:      #263244;
+  --orange:     #D4621A;
+  --orange-lt:  #E87830;
+  --orange-dim: #A84E14;
+  --ink-lt:     #6B7A90;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'IBM Plex Sans', system-ui, sans-serif;
+  background: var(--slate);
+  color: #18202C;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── DEV BANNER ──────────────────────────────────────────────── */
+.dev-banner {
+  background: rgba(212,98,26,0.12);
+  border-bottom: 1px solid rgba(212,98,26,0.25);
+  padding: 0.45rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dev-banner-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--orange-lt);
+  flex-shrink: 0;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.4; transform: scale(0.75); }
+}
+
+.dev-banner-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--orange-lt);
+}
+
+/* ── NAV ─────────────────────────────────────────────────────── */
+nav {
+  background: var(--navy);
+  border-bottom: 2px solid var(--orange);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1.75rem;
+  height: 52px;
+  flex-shrink: 0;
+}
+
+.nav-inner {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dev-banner-inner {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.nav-brand {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: rgba(224,230,242,0.95);
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.nav-brand em { color: rgba(224,230,242,0.95); font-style: normal; }
+
+/* Reserved for future nav links */
+.nav-links { display: flex; gap: 1.5rem; list-style: none; }
+
+.nav-links a {
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(224,230,242,0.45);
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.nav-links a:hover { color: rgba(224,230,242,0.90); }
+
+/* ── MAIN LAYOUT ─────────────────────────────────────────────── */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.main-inner {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ── HERO ────────────────────────────────────────────────────── */
+.hero {
+  background: var(--slate);
+  padding: 4rem 2.5rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.09) 1px, transparent 1px);
+  background-size: 26px 26px;
+  pointer-events: none;
+}
+
+.hero-inner { position: relative; z-index: 1; max-width: 540px; margin: 0 auto; }
+
+.eyebrow {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--orange-lt);
+  margin-bottom: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 16px; height: 2px;
+  background: var(--orange-lt);
+  flex-shrink: 0;
+}
+
+.hero h1 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(2rem, 3.8vw, 3rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  color: rgba(224,230,242,0.97);
+  margin-bottom: 1.1rem;
+}
+
+.hero h1 em { color: var(--orange-lt); font-style: normal; }
+
+.cursor {
+  display: inline-block;
+  width: 0.1em; height: 0.75em;
+  background: var(--orange);
+  vertical-align: text-bottom;
+  margin-left: 0.08em;
+  margin-bottom: 0.18em;
+  border-radius: 1px;
+  opacity: 1;
+}
+
+.hero p {
+  font-size: 1.00rem;
+  color: rgba(224,230,242,0.48);
+  line-height: 1.72;
+  margin-bottom: 2rem;
+  max-width: 360px;
+}
+
+.hero-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  background: var(--orange);
+  color: #fff;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600; font-size: 0.80rem;
+  letter-spacing: 0.04em;
+  padding: 0.65em 1.2em;
+  border-radius: 3px;
+  border: 2px solid transparent;
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, box-shadow 0.15s, transform 0.08s, border-color 0.1s;
+  box-shadow: 0 2px 8px rgba(212,98,26,0.35), 0 1px 2px rgba(0,0,0,0.25);
+}
+.btn-primary:hover {
+  background: var(--orange-lt);
+  box-shadow: 0 4px 14px rgba(212,98,26,0.45), 0 1px 3px rgba(0,0,0,0.25);
+}
+.btn-primary:active {
+  background: var(--orange-dim);
+  border-color: #4CA3FF;
+  box-shadow: 0 0 0 3px rgba(76,163,255,0.35), 0 1px 2px rgba(0,0,0,0.20);
+  transform: translateY(1px);
+}
+.btn-primary:focus-visible {
+  border-color: #4CA3FF;
+  box-shadow: 0 0 0 3px rgba(76,163,255,0.35);
+}
+
+.btn-ghost {
+  display: inline-flex; align-items: center;
+  background: rgba(224,230,242,0.07);
+  color: rgba(224,230,242,0.72);
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500; font-size: 0.80rem;
+  letter-spacing: 0.04em;
+  padding: 0.65em 1.2em;
+  border-radius: 3px;
+  border: 1px solid rgba(224,230,242,0.18);
+  text-decoration: none;
+  outline: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.08s, box-shadow 0.15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.20);
+}
+.btn-ghost:hover {
+  background: rgba(224,230,242,0.12);
+  border-color: rgba(224,230,242,0.40);
+  color: rgba(224,230,242,0.95);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+}
+.btn-ghost:active {
+  background: rgba(76,163,255,0.10);
+  border-color: #4CA3FF;
+  color: rgba(224,230,242,0.95);
+  box-shadow: 0 0 0 3px rgba(76,163,255,0.20);
+  transform: translateY(1px);
+}
+.btn-ghost:focus-visible {
+  border-color: #4CA3FF;
+  box-shadow: 0 0 0 3px rgba(76,163,255,0.25);
+}
+
+/* ── MODULES PANEL ───────────────────────────────────────────── */
+.modules-pane {
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  width: 100%;
+}
+
+.modules-header {
+  padding: 1.1rem 1.75rem 0.9rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  flex-shrink: 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.70rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(224,230,242,0.28);
+}
+
+.module-list {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 6.5rem 1fr;
+  align-content: start;
+}
+
+.module-item {
+  display: contents;
+}
+
+.module-item:hover .module-tag,
+.module-item:hover .module-desc {
+  background: rgba(255,255,255,0.06);
+}
+
+.module-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.92rem; font-weight: 600;
+  color: var(--orange-lt);
+  white-space: nowrap;
+  padding: 1.05rem 0.75rem 1.05rem 1.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  align-self: stretch;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 1.1rem;
+}
+
+.module-desc {
+  font-size: 0.86rem;
+  color: rgba(224,230,242,0.42);
+  line-height: 1.65;
+  padding: 1.05rem 1.75rem 1.05rem 0.5rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.module-label {
+  color: rgba(224,230,242,0.88);
+  font-weight: 600;
+  margin-right: 0.2em;
+}
+
+/* Inline code tags within module descriptions */
+.module-desc .tag-code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85em;
+  color: var(--orange-lt);
+  background: rgba(255,255,255,0.07);
+  padding: 0.1em 0.3em;
+  border-radius: 2px;
+}
+
+.module-item:last-child .module-tag,
+.module-item:last-child .module-desc {
+  border-bottom: none;
+}
+
+/* ── BOTTOM STRIP ────────────────────────────────────────────── */
+.bottom-strip {
+  background: var(--navy);
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  width: 100%;
+}
+
+.panel-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.66rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--ink-lt);
+}
+
+/* Intro panel */
+.intro-panel {
+  padding: 1.6rem 2rem;
+  border-right: 1px solid rgba(255,255,255,0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.intro-text {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: rgba(224,230,242,0.62);
+}
+
+.intro-text strong { color: rgba(224,230,242,0.78); font-weight: 500; }
+.intro-text .mono, .intro-text code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.86em;
+  color: var(--orange-lt);
+}
+
+/* Cite */
+.cite-panel {
+  padding: 1.6rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cite-tabs-sm { display: flex; gap: 0; margin-bottom: 0.1rem; }
+
+.cite-tab-sm {
+  padding: 0.25em 0.75em;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.10);
+  margin-left: -1px;            /* collapse shared seams, no width change */
+  position: relative;
+  background: transparent; cursor: pointer;
+  color: rgba(224,230,242,0.28);
+  transition: color 0.15s, background 0.15s;
+}
+.cite-tab-sm:first-child { margin-left: 0; border-radius: 3px 0 0 3px; }
+.cite-tab-sm:last-child  { border-radius: 0 3px 3px 0; }
+/* Lift the active tab above its neighbors so its orange border shows on all
+   four sides, not just where it isn't overlapped by the next tab. */
+.cite-tab-sm.active { color: var(--orange-lt); background: rgba(212,98,26,0.12); border-color: rgba(212,98,26,0.30); z-index: 1; }
+
+.cite-pane-sm { display: none; align-items: flex-start; gap: 0.5rem; }
+.cite-pane-sm.active { display: flex; }
+
+.cite-text-sm {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.80rem; line-height: 1.75;
+  color: rgba(224,230,242,0.52);
+  word-break: break-word;
+  flex: 1;
+}
+
+.cite-text-sm .ca { color: rgba(224,230,242,0.80); font-weight: 600; }
+.cite-text-sm .ct { font-style: italic; color: rgba(224,230,242,0.70); }
+.cite-text-sm .cu { color: var(--orange-lt); }
+
+.cite-hint {
+  font-size: 0.76rem;
+  color: rgba(224,230,242,0.25);
+  line-height: 1.5;
+}
+.cite-hint code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.85em;
+  background: rgba(255,255,255,0.06);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+}
+
+/* ── MOBILE ──────────────────────────────────────────────────── */
+@media (max-width: 720px) {
+  .hero { padding: 2.5rem 1.4rem 2rem; }
+  .hero h1 { font-size: clamp(1.8rem, 8vw, 2.6rem); }
+  .bottom-strip { grid-template-columns: 1fr; }
+  .install-panel,
+  .intro-panel { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
+  .nav-links { display: none; }
+  footer { padding: 0.9rem 1.4rem; }
+  .footer-social { gap: 1rem; }
+}
+
+/* ── CITE MODAL ──────────────────────────────────────────────── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10,15,22,0.75);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.modal-overlay.open { display: flex; }
+
+.modal {
+  background: var(--navy);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-top: 3px solid var(--orange);
+  border-radius: 6px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.55);
+  animation: modal-in 0.18s ease;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.2rem 1.5rem 1rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.modal-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(224,230,242,0.35);
+}
+
+.modal-close {
+  background: none;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 3px;
+  width: 26px; height: 26px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(224,230,242,0.40);
+  font-size: 0.85rem;
+  transition: border-color 0.15s, color 0.15s;
+}
+.modal-close:hover { border-color: rgba(255,255,255,0.35); color: rgba(224,230,242,0.90); }
+
+.modal-body { padding: 1.4rem 1.5rem 1.6rem; display: flex; flex-direction: column; gap: 1rem; }
+
+.modal-tabs { display: flex; }
+
+.modal-tab {
+  padding: 0.3em 0.9em;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.62rem; font-weight: 600;
+  letter-spacing: 0.10em; text-transform: uppercase;
+  border: 1px solid rgba(255,255,255,0.10);
+  margin-left: -1px;            /* collapse shared seams, no width change */
+  position: relative;
+  background: transparent; cursor: pointer;
+  color: rgba(224,230,242,0.28);
+  transition: color 0.15s, background 0.15s;
+}
+.modal-tab:first-child { margin-left: 0; border-radius: 3px 0 0 3px; }
+.modal-tab:last-child  { border-radius: 0 3px 3px 0; }
+/* Lift the active tab above its neighbors so its orange border shows on all
+   four sides, not just where it isn't overlapped by the next tab. */
+.modal-tab.active      { color: var(--orange-lt); background: rgba(212,98,26,0.12); border-color: rgba(212,98,26,0.30); z-index: 1; }
+
+.modal-pane { display: none; }
+.modal-pane.active { display: block; }
+
+.modal-cite-text {
+  position: relative;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.76rem; line-height: 1.80;
+  color: rgba(224,230,242,0.55);
+  word-break: break-word;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 4px;
+  padding: 1rem 2.8rem 1rem 1.1rem;
+}
+
+.modal-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 2px;
+  color: rgba(224,230,242,0.40);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+/* Inside modal, button is absolutely positioned within the text block */
+.modal-cite-text .modal-copy-btn {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+}
+.modal-copy-btn:hover { border-color: var(--orange); color: var(--orange-lt); }
+.modal-copy-btn.copied { border-color: #7ED97E; color: #7ED97E; }
+
+.modal-copy-btn .copy-icon,
+.modal-copy-btn .check-icon {
+  width: 13px; height: 13px;
+}
+.modal-copy-btn .check-icon { display: none; }
+.modal-copy-btn.copied .copy-icon { display: none; }
+.modal-copy-btn.copied .check-icon { display: block; }
+
+.modal-cite-text .ca { color: rgba(224,230,242,0.85); font-weight: 600; }
+.modal-cite-text .ct { font-style: italic; color: rgba(224,230,242,0.72); }
+.modal-cite-text .cu { color: var(--orange-lt); }
+
+.modal-hint {
+  font-size: 0.72rem;
+  color: rgba(224,230,242,0.25);
+  line-height: 1.6;
+}
+.modal-hint code {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88em;
+  background: rgba(255,255,255,0.07);
+  padding: 0.1em 0.35em;
+  border-radius: 2px;
+  color: rgba(224,230,242,0.50);
+}
+
+/* ── FOOTER ──────────────────────────────────────────────────── */
+footer {
+  background: var(--navy);
+  border-top: 2px solid var(--orange);
+  padding: 1rem 1.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.footer-inner {
+  width: 100%;
+  max-width: 860px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.footer-brand {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: rgba(224,230,242,0.70);
+  letter-spacing: -0.01em;
+}
+
+.footer-brand em { color: rgba(224,230,242,0.70); font-style: normal; }
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.footer-copy {
+  font-size: 0.72rem;
+  color: rgba(224,230,242,0.30);
+  letter-spacing: 0.02em;
+}
+
+.footer-social {
+  display: flex;
+  gap: 1.1rem;
+  list-style: none;
+  align-items: center;
+}
+
+.footer-social a {
+  display: inline-flex;
+  color: rgba(224,230,242,0.35);
+  transition: color 0.15s;
+}
+
+.footer-social a:hover { color: var(--orange-lt); }
+
+.footer-social svg { width: 20px; height: 20px; display: block; }
+
+/* Bluesky butterfly is a wide glyph inset within its viewBox; scale up
+   slightly and nudge down so its bottom edge lines up with the others. */
+.footer-social .icon-bsky svg { width: 22px; height: 22px; transform: translateY(1px); }
+
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="/">Arc<em>Smith</em></a>
+  </div>
+</nav>
+
+<!-- DEV BANNER -->
+<div class="dev-banner">
+  <div class="dev-banner-inner">
+    <span class="dev-banner-dot"></span>
+    <span class="dev-banner-text">Currently in development. Check back soon.</span>
+  </div>
+</div>
+
+<main>
+  <div class="main-inner">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">ArcPy toolbox utilities</p>
+
+      <h1>A tool builder's<br><em>toolbox.</em><span class="cursor"></span></h1>
+
+      <p>
+        Refined toolbox design. A structured Python library for building ArcPy tools in research workflows.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn-primary" href="/docs/">Read the Docs →</a>
+        <button class="btn-ghost" onclick="openCiteModal()">Cite</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODULES PANEL -->
+  <div class="modules-pane">
+    <div class="modules-header">ArcSmith Modules</div>
+    <ul class="module-list">
+
+      <li class="module-item">
+        <span class="module-tag">.param</span>
+        <div class="module-desc"><span class="module-label">Parameter module:</span> Helpers for <code class="tag-code">updateParameters</code> covering cascade resets, dropdown menu population, and dynamic grouping of parameters.</div>
+      </li>
+
+      <li class="module-item">
+        <span class="module-tag">.lyr</span>
+        <div class="module-desc"><span class="module-label">Layer module:</span> Add layers to a map with optional stroke/fill or <code class="tag-code">.lyrx</code> symbology, retrieve or remove layers by name or source, and organize layers into groups.</div>
+      </li>
+
+      <li class="module-item">
+        <span class="module-tag">.ws</span>
+        <div class="module-desc"><span class="module-label">Workspace module:</span> Create a geodatabase and its parent folder in one call. Route intermediate outputs to memory or scratch GDB with a single flag.</div>
+      </li>
+
+      <li class="module-item">
+        <span class="module-tag">.fc</span>
+        <div class="module-desc"><span class="module-label">Feature class module:</span> Create, copy, filter, and export feature classes to a geodatabase with chosen fields, validate geometry types, and compute polygon areas.</div>
+      </li>
+
+      <li class="module-item">
+        <span class="module-tag">.flds</span>
+        <div class="module-desc"><span class="module-label">Fields module:</span> Inspect and edit attribute tables in place, build field mappings, clean and standardize blank values, list column headers or inspect unique column values.</div>
+      </li>
+
+      <li class="module-item">
+        <span class="module-tag">.tbl</span>
+        <div class="module-desc"><span class="module-label">Table module:</span> Create standalone tables from in-memory rows, populate a field from a key/value lookup with no physical table, and join an external table's columns into a feature class.</div>
+      </li>
+
+    </ul>
+  </div>
+
+  <!-- BOTTOM STRIP -->
+  <div class="bottom-strip">
+
+    <!-- What it is -->
+    <div class="intro-panel">
+      <span class="panel-label">Usage At A Glance</span>
+      <p class="intro-text"><strong>ArcSmith</strong> is free and open-source software <code class="tag-code">(MIT)</code>, built for public-interest research and work in conservation, urban planning, and disaster response. It grew out of open research, and if it helps yours, I hope you'll pass it forward. </strong></p>
+      <span class="cite-hint"><a href="/docs/guides/quick_start/" style="color:var(--orange-lt);text-decoration:none;">Read the quickstart →</a></span>
+    </div>
+
+    <!-- Citation -->
+    <div class="cite-panel" id="cite">
+      <span class="panel-label">Cite ArcSmith in research</span>
+
+      <div class="cite-tabs-sm">
+        <button class="cite-tab-sm active" onclick="switchCite('apa',this)">APA</button>
+        <button class="cite-tab-sm" onclick="switchCite('chicago',this)">Chicago</button>
+        <button class="cite-tab-sm" onclick="switchCite('bib',this)">BibTeX</button>
+      </div>
+
+      <div class="cite-pane-sm active" id="cite-apa">
+        <p class="cite-text-sm"><span class="ca">Mros, H. F., III.</span> (<span class="ca">__ARCSMITH_YEAR__</span>). <span class="ct">ArcSmith: ArcPy toolbox utilities</span> [Computer software]. Version __ARCSMITH_VERSION__. <span class="cu">https://pypi.org/project/arcsmith/</span></p>
+        <button class="modal-copy-btn" onclick="copyCitation('cite-apa', this)" aria-label="Copy citation" title="Copy citation">
+          <svg class="copy-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M4.5 13V4.5C4.5 3.67157 5.17157 3 6 3H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="cite-pane-sm" id="cite-chicago">
+        <p class="cite-text-sm"><span class="ca">Mros, Henry F., III.</span> __ARCSMITH_YEAR__. <span class="ct">ArcSmith: ArcPy Toolbox Utilities</span>. Version __ARCSMITH_VERSION__. Computer software. <span class="cu">https://pypi.org/project/arcsmith/</span></p>
+        <button class="modal-copy-btn" onclick="copyCitation('cite-chicago', this)" aria-label="Copy citation" title="Copy citation">
+          <svg class="copy-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M4.5 13V4.5C4.5 3.67157 5.17157 3 6 3H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="cite-pane-sm" id="cite-bib">
+        <p class="cite-text-sm">@software{arcsmith,<br>&nbsp;&nbsp;author&nbsp; = {<span class="ca">Mros, III, Henry F.</span>},<br>&nbsp;&nbsp;title&nbsp;&nbsp; = {ArcSmith: ArcPy Toolbox Utilities},<br>&nbsp;&nbsp;year&nbsp;&nbsp;&nbsp; = {__ARCSMITH_YEAR__},<br>&nbsp;&nbsp;version = {__ARCSMITH_VERSION__},<br>&nbsp;&nbsp;url&nbsp;&nbsp;&nbsp;&nbsp; = {<span class="cu">https://pypi.org/project/arcsmith/</span>}<br>}</p>
+        <button class="modal-copy-btn" onclick="copyCitation('cite-bib', this)" aria-label="Copy citation" title="Copy citation">
+          <svg class="copy-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M4.5 13V4.5C4.5 3.67157 5.17157 3 6 3H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+          <svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+
+      <p class="cite-hint">Citation is for version __ARCSMITH_VERSION__ (__ARCSMITH_YEAR__). Run <code>pip show arcsmith</code> to confirm the version you used.</p>
+    </div>
+
+  </div>
+  </div><!-- /.main-inner -->
+</main>
+
+<!-- CITE MODAL -->
+<div class="modal-overlay" id="cite-modal" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">Cite ArcSmith in research</span>
+      <button class="modal-close" onclick="closeCiteModal()">✕</button>
+    </div>
+    <div class="modal-body">
+
+      <div class="modal-tabs">
+        <button class="modal-tab active" onclick="switchModalCite('apa', this)">APA</button>
+        <button class="modal-tab" onclick="switchModalCite('chicago', this)">Chicago</button>
+        <button class="modal-tab" onclick="switchModalCite('bibtex', this)">BibTeX</button>
+      </div>
+
+      <div class="modal-pane active" id="modal-apa">
+        <p class="modal-cite-text">
+          <button class="modal-copy-btn" onclick="copyCitation('modal-apa', this)" aria-label="Copy citation" title="Copy citation">
+            <svg class="copy-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M4.5 13V4.5C4.5 3.67157 5.17157 3 6 3H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="ca">Mros, H. F., III.</span> (<span class="ca">__ARCSMITH_YEAR__</span>). <span class="ct">ArcSmith: ArcPy toolbox utilities</span> [Computer software]. Version __ARCSMITH_VERSION__. <span class="cu">https://pypi.org/project/arcsmith/</span>
+        </p>
+      </div>
+
+      <div class="modal-pane" id="modal-chicago">
+        <p class="modal-cite-text">
+          <button class="modal-copy-btn" onclick="copyCitation('modal-chicago', this)" aria-label="Copy citation" title="Copy citation">
+            <svg class="copy-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M4.5 13V4.5C4.5 3.67157 5.17157 3 6 3H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="ca">Mros, Henry F., III.</span> __ARCSMITH_YEAR__. <span class="ct">ArcSmith: ArcPy Toolbox Utilities</span>. Version __ARCSMITH_VERSION__. Computer software. <span class="cu">https://pypi.org/project/arcsmith/</span>
+        </p>
+      </div>
+
+      <div class="modal-pane" id="modal-bibtex">
+        <p class="modal-cite-text">
+          <button class="modal-copy-btn" onclick="copyCitation('modal-bibtex', this)" aria-label="Copy citation" title="Copy citation">
+            <svg class="copy-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="7" y="7" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M4.5 13V4.5C4.5 3.67157 5.17157 3 6 3H13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            <svg class="check-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 10.5L8 14.5L16 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          @software{arcsmith,<br>&nbsp;&nbsp;author&nbsp; = {<span class="ca">Mros, III, Henry F.</span>},<br>&nbsp;&nbsp;title&nbsp;&nbsp; = {ArcSmith: ArcPy Toolbox Utilities},<br>&nbsp;&nbsp;year&nbsp;&nbsp;&nbsp; = {__ARCSMITH_YEAR__},<br>&nbsp;&nbsp;version = {__ARCSMITH_VERSION__},<br>&nbsp;&nbsp;url&nbsp;&nbsp;&nbsp;&nbsp; = {<span class="cu">https://pypi.org/project/arcsmith/</span>}<br>}
+        </p>
+      </div>
+
+      <p class="modal-hint">Citation is for version __ARCSMITH_VERSION__ (__ARCSMITH_YEAR__). Run <code>pip show arcsmith</code> to confirm the version you used.</p>
+
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-left">
+      <span class="footer-brand">Arc<em>Smith</em></span>
+      <span class="footer-copy">&copy; __ARCSMITH_YEAR__ Henry&nbsp;F.&nbsp;Mros,&nbsp;III &middot; MIT Licensed</span>
+    </div>
+    <ul class="footer-social">
+      <li><a href="https://github.com/HFM3/arcsmith" aria-label="GitHub" title="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.04-.02-2.05-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.09 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.29 0 .32.22.7.83.58A12.01 12.01 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/>
+        </svg></a></li>
+      <li><a href="https://pypi.org/project/arcsmith/" aria-label="PyPI" title="PyPI">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M14.25.18l.9.2.73.26.59.3.45.32.34.34.25.34.16.33.1.3.04.26.02.2-.01.13V8.5l-.05.63-.13.55-.21.46-.26.38-.3.31-.33.25-.35.19-.35.14-.33.1-.3.07-.26.04-.21.02H8.77l-.69.05-.59.14-.5.22-.41.27-.33.32-.27.35-.2.36-.15.37-.1.35-.07.32-.04.27-.02.21v3.06H3.17l-.21-.03-.28-.07-.32-.12-.35-.18-.36-.26-.36-.36-.35-.46-.32-.59-.28-.73-.21-.88-.14-1.05-.05-1.23.06-1.22.16-1.04.24-.87.32-.71.36-.57.4-.44.42-.33.42-.24.4-.16.36-.1.32-.05.24-.01h.16l.06.01h8.16v-.83H6.18l-.01-2.75-.02-.37.05-.34.11-.31.17-.28.25-.26.31-.23.38-.2.44-.18.51-.15.58-.12.64-.1.71-.06.77-.04.84-.02 1.27.05zm-6.3 1.98l-.23.33-.08.41.08.41.23.34.33.22.41.09.41-.09.33-.22.23-.34.08-.41-.08-.41-.23-.33-.33-.22-.41-.09-.41.09zm13.09 3.95l.28.06.32.12.35.18.36.27.36.35.35.47.32.59.28.73.21.88.14 1.04.05 1.23-.06 1.23-.16 1.04-.24.86-.32.71-.36.57-.4.45-.42.33-.42.24-.4.16-.36.09-.32.05-.24.02-.16-.01h-8.22v.82h5.84l.01 2.76.02.36-.05.34-.11.31-.17.29-.25.25-.31.24-.38.2-.44.17-.51.15-.58.13-.64.09-.71.07-.77.04-.84.01-1.27-.04-1.07-.14-.9-.2-.73-.25-.59-.3-.45-.33-.34-.34-.25-.34-.16-.33-.1-.3-.04-.25-.02-.2.01-.13v-5.34l.05-.64.13-.54.21-.46.26-.38.3-.32.33-.24.35-.2.35-.14.33-.1.3-.06.26-.04.21-.02.13-.01h5.84l.69-.05.59-.14.5-.21.41-.28.33-.32.27-.35.2-.36.15-.36.1-.35.07-.32.04-.28.02-.21V6.07h2.09l.14.01zm-6.47 14.25l-.23.33-.08.41.08.41.23.33.33.23.41.08.41-.08.33-.23.23-.33.08-.41-.08-.41-.23-.33-.33-.23-.41-.08-.41.08z"/>
+        </svg></a></li>
+      <!-- Bluesky: hidden for now until a profile exists
+      <li><a href="#" class="icon-bsky" aria-label="Bluesky" title="Bluesky">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M5.77 3.04c2.52 1.9 5.23 5.74 6.23 7.8 1-2.06 3.71-5.9 6.23-7.8 1.82-1.37 4.77-2.43 4.77.94 0 .67-.39 5.65-.61 6.46-.79 2.81-3.65 3.53-6.2 3.09 4.45.76 5.58 3.27 3.14 5.78-4.64 4.77-6.67-1.2-7.19-2.72-.1-.28-.14-.41-.14-.3 0-.11-.05.02-.14.3-.52 1.52-2.55 7.49-7.19 2.72-2.44-2.51-1.31-5.02 3.14-5.78-2.55.44-5.41-.28-6.2-3.09C.61 9.63.22 4.65.22 3.98c0-3.37 2.95-2.31 4.77-.94z"/>
+        </svg></a></li>
+      -->
+    </ul>
+  </div>
+</footer>
+
+<script>
+/* ── Cursor blink ── */
+(function () {
+  const cursor = document.querySelector('.cursor');
+  if (cursor) {
+    let visible = true;
+    setInterval(function () { visible = !visible; cursor.style.opacity = visible ? '1' : '0'; }, 530);
+  }
+})();
+
+/* ── Cite modal ── */
+function openCiteModal() {
+  document.getElementById('cite-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCiteModal() {
+  document.getElementById('cite-modal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('cite-modal')) closeCiteModal();
+}
+
+function switchModalCite(id, btn) {
+  document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.modal-pane').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('modal-' + id).classList.add('active');
+}
+
+function copyCitation(paneId, btn) {
+  const pane = document.getElementById(paneId);
+  const textEl = pane.querySelector('.modal-cite-text, .cite-text-sm');
+  const clone = textEl.cloneNode(true);
+  const btnClone = clone.querySelector('.modal-copy-btn');
+  if (btnClone) btnClone.remove();
+  const text = clone.innerText.trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.classList.add('copied');
+    setTimeout(() => { btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeCiteModal();
+});
+
+/* ── Citation tabs (bottom strip) ── */
+function switchCite(id, btn) {
+  document.querySelectorAll('.cite-tab-sm').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.cite-pane-sm').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('cite-' + id).classList.add('active');
+}
+
+</script>
+</body>
+</html>

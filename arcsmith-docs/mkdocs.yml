@@ -1,0 +1,85 @@
+site_name: ArcSmith
+site_description: Utilities for building clean, maintainable ArcPy toolboxes.
+site_url: https://arcsmith.dev
+#repo_url: https://github.com/yourusername/arcsmith
+repo_name: arcsmith
+
+hooks:
+  - hooks/copy_homepage.py
+
+docs_dir: docs
+site_dir: site/docs
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  favicon: stylesheets/arcsmith-icon.svg
+  palette:
+    scheme: slate
+    primary: custom
+    accent: custom
+  font:
+    text: IBM Plex Sans
+    code: IBM Plex Mono
+  icon:
+    repo: fontawesome/brands/github
+#  logo: stylesheets/arcsmith-icon.svg
+  features:
+#    - navigation.instant
+    - navigation.tracking
+    - navigation.top
+    - navigation.indexes
+    - toc.follow
+    - content.code.copy
+    - content.code.annotate
+    - content.tooltips
+
+extra_css:
+  - stylesheets/arcsmith.css
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.details
+  - tables
+  - attr_list
+  - md_in_html
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: false
+      title: On this page
+
+nav:
+  - arcsmith.dev: https://arcsmith.dev
+  - Docs home: index.md
+  - Modules:
+      - arcsmith.param: reference/param.md
+      - arcsmith.lyr:
+          - reference/lyr.md
+          - Style presets: reference/lyr_presets.md
+      - arcsmith.fc: reference/fc.md
+      - arcsmith.flds: reference/flds.md
+      - arcsmith.tbl: reference/tbl.md
+      - arcsmith.ws: reference/ws.md
+  - Guides:
+      - Quick Start: guides/quick_start.md
+      - Install: guides/install.md
+      - Census Tutorial: guides/census_tool_tut.md
+      - Compatibility: guides/compatibility.md
+#      - Common Combos: guides/combos.md
+#      - Usage guide: usage.md
+  - Cite: cite.md
+
+draft_docs: |
+  drafts/
+  *_wip.md

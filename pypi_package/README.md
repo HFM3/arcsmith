@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="arcsmith-docs/docs/images/social-card.png" alt="ArcSmith - A tool builder's toolbox. ArcPy toolbox utilities." width="760">
+  <img src="https://arcsmith.dev/docs/images/social-card.png" alt="ArcSmith - A tool builder's toolbox. ArcPy toolbox utilities." width="760">
 </p>
 
 # ArcSmith
@@ -8,7 +8,7 @@
 
 [![Python](https://img.shields.io/badge/python-3.x-blue.svg)](https://www.python.org/)
 [![PyPI](https://img.shields.io/pypi/v/arcsmith.svg)](https://pypi.org/project/arcsmith/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](pypi_package/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/HFM3/arcsmith/blob/HEAD/pypi_package/LICENSE)
 
 ### Utilities for building clean, maintainable ArcPy toolboxes.
 
@@ -62,4 +62,4 @@ APA, Chicago, and BibTeX formats, kept current with each release, are at
 
 ## License
 
-[MIT](pypi_package/LICENSE). Free to use, modify, and redistribute, including in commercial or proprietary tools, as long as the copyright notice and license text are retained. See the LICENSE file for the full terms.
+[MIT](https://github.com/HFM3/arcsmith/blob/HEAD/pypi_package/LICENSE). Free to use, modify, and redistribute, including in commercial or proprietary tools, as long as the copyright notice and license text are retained. See the LICENSE file for the full terms.

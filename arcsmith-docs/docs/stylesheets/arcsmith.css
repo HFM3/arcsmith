@@ -1,0 +1,796 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   ARCSMITH — GIS Instrument Panel
+   Palette: slate-navy · clean white · surveyor orange
+   Inspired by: QGIS attribute tables, ArcGIS Pro UI chrome,
+                instrument panel readouts, satellite raster overlays.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root {
+  --as-navy:      #1E2B3C;   /* header / darkest surface */
+  --as-slate:     #263244;   /* secondary dark surface */
+  --as-slate-mid: #344258;   /* sidebar hover */
+  --as-orange:    #D4621A;   /* surveyor orange — primary accent */
+  --as-orange-lt: #E87830;   /* brighter orange for dark surfaces */
+  --as-orange-dim: #A84E14;  /* darker orange for light bg links */
+  --as-orange-glow: rgba(212, 98, 26, 0.11);
+
+  /* Page surfaces — clean, not tan */
+  --as-white:     #FFFFFF;
+  --as-off:       #F7F8FA;   /* very light cool gray page bg */
+  --as-surface:   #EEF0F4;   /* sidebar and card surface */
+  --as-rule:      #DDE1E8;   /* borders, dividers */
+
+  /* Ink */
+  --as-ink:       #18202C;
+  --as-ink-mid:   #3D4A5C;
+  --as-ink-lt:    #6B7A90;
+  --as-link:      #1C4FA8;   /* coordinate blue for links */
+}
+
+/* ━━━ LIGHT MODE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+[data-md-color-scheme="default"] {
+  --md-primary-fg-color:              var(--as-navy);
+  --md-primary-fg-color--light:       var(--as-slate);
+  --md-primary-fg-color--dark:        #111820;
+  --md-primary-bg-color:              #FFFFFF;
+  --md-accent-fg-color:               var(--as-orange);
+  --md-accent-fg-color--transparent:  var(--as-orange-glow);
+
+  --md-default-bg-color:              var(--as-off);
+  --md-default-fg-color:              var(--as-ink);
+  --md-default-fg-color--light:       var(--as-ink-mid);
+  --md-default-fg-color--lighter:     var(--as-ink-lt);
+  --md-default-fg-color--lightest:    rgba(24, 32, 44, 0.07);
+
+  --md-code-bg-color:                 #EDF0F5;
+  --md-code-fg-color:                 #1A2230;
+  --md-code-hl-color:                 rgba(212, 98, 26, 0.13);
+
+  --md-typeset-a-color:               var(--as-link);
+}
+
+/* ━━━ DARK MODE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:              var(--as-navy);
+  --md-primary-fg-color--light:       #18222F;
+  --md-primary-fg-color--dark:        #0E141C;
+  --md-primary-bg-color:              #F0F2F6;
+  --md-accent-fg-color:               var(--as-orange-lt);
+  --md-accent-fg-color--transparent:  var(--as-orange-glow);
+
+  --md-default-bg-color:              #141C28;
+  --md-default-fg-color:              rgba(224, 230, 242, 0.88);
+  --md-default-fg-color--light:       rgba(224, 230, 242, 0.56);
+  --md-default-fg-color--lighter:     rgba(224, 230, 242, 0.32);
+  --md-default-fg-color--lightest:    rgba(224, 230, 242, 0.08);
+
+  --md-code-bg-color:                 #1C2638;
+  --md-code-fg-color:                 #C4CEDF;
+  --md-code-hl-color:                 rgba(212, 98, 26, 0.18);
+
+  --md-typeset-a-color:               #6BA3F0;
+}
+
+/* ━━━ TYPOGRAPHY ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+body, .md-typeset { font-family: 'IBM Plex Sans', system-ui, sans-serif; }
+.md-typeset { font-size: 0.875rem; line-height: 1.75; }
+
+@media screen and (orientation: landscape) {
+  .md-typeset { font-size: 0.75rem; line-height: 1.7; }
+  .as-hero { padding: 1rem 1.5rem; margin: -0.5rem 0 1rem; }
+}
+code, .md-typeset code, pre, .md-typeset pre {
+  font-family: 'IBM Plex Mono', monospace !important;
+  font-size: 0.9em;
+}
+
+.md-typeset h1 { font-weight: 700; letter-spacing: -0.025em; }
+[data-md-color-scheme="slate"] .md-typeset h1 { color: rgba(224, 230, 242, 0.97); }
+
+.md-typeset h2 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  margin-top: 2.5em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid var(--as-rule);
+}
+[data-md-color-scheme="slate"] .md-typeset h2 {
+  border-bottom-color: rgba(224,230,242,0.10);
+}
+
+.md-typeset :not(pre) > code {
+  background: var(--md-code-bg-color);
+  border-radius: 3px;
+  padding: 0.1em 0.38em;
+  font-weight: 500;
+  color: var(--as-orange-dim);
+}
+[data-md-color-scheme="slate"] .md-typeset :not(pre) > code {
+  color: var(--as-orange-lt);
+}
+
+/* ━━━ HOME LINK inside header title (JS-safe approach) ━━━━━━━━━━━━━━━ */
+.as-home-link {
+  color: inherit !important;
+  text-decoration: none !important;
+  display: block;
+}
+.as-home-link:hover { opacity: 0.80; }
+
+/* ━━━ HEADER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-header {
+  background: var(--as-navy);
+  border-bottom: 2px solid var(--as-orange);
+  box-shadow: none;
+}
+
+/* Remove logo from header and sidebar */
+.md-header__button.md-logo,
+.md-nav__button.md-logo,
+.md-logo {
+  display: none !important;
+}
+
+.md-header__title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 700;
+  color: rgba(224, 230, 242, 0.95) !important;
+  cursor: pointer;
+}
+
+.md-search__form {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 4px;
+}
+.md-search__form:focus-within { box-shadow: 0 0 0 2px var(--as-orange); }
+.md-search__input::placeholder { color: rgba(224,230,242,0.28); }
+
+/* ━━━ SIDEBAR ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Strategy: sidebar bg = --md-default-bg-color (we set to off-white).
+   Add a right border in orange. Style nav links with navy ink — fully
+   visible against off-white in light mode, and against dark in dark mode.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-sidebar--primary {
+  border-right: 2px solid var(--as-orange);
+}
+
+/* Sidebar site title — navy bar, always readable */
+.md-nav--primary .md-nav__title[for="__drawer"] {
+  background: var(--as-navy);
+  color: rgba(224, 230, 242, 0.92);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+}
+
+/* Section group labels */
+.md-nav__item--section > .md-nav__link {
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--as-ink-lt) !important;
+  padding-top: 1rem !important;
+}
+[data-md-color-scheme="slate"] .md-nav__item--section > .md-nav__link {
+  color: rgba(224,230,242,0.38) !important;
+}
+
+/* Nav links */
+.md-nav--primary .md-nav__link {
+  color: var(--as-ink-mid);
+  font-size: 0.72rem;
+  transition: color 0.12s;
+}
+.md-nav--primary .md-nav__link:hover {
+  color: var(--as-navy) !important;
+}
+
+/* Active link */
+.md-nav--primary .md-nav__item--active > .md-nav__link,
+.md-nav--primary .md-nav__link--active {
+  color: var(--as-navy) !important;
+  font-weight: 600;
+}
+.md-nav--primary .md-nav__item--active > .md-nav__link {
+  border-left: 3px solid var(--as-orange);
+  padding-left: 0.6rem;
+  margin-left: -3px;
+  background: rgba(212, 98, 26, 0.07);
+}
+
+/* Dark mode nav */
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__link {
+  color: rgba(224,230,242,0.52);
+}
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__link:hover {
+  color: rgba(224,230,242,0.92) !important;
+}
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__item--active > .md-nav__link,
+[data-md-color-scheme="slate"] .md-nav--primary .md-nav__link--active {
+  color: var(--as-orange-lt) !important;
+}
+
+/* ━━━ TABLE OF CONTENTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-nav--secondary .md-nav__title {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+.md-nav--secondary .md-nav__link--active {
+  color: var(--as-orange-dim) !important;
+  font-weight: 500;
+}
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link--active {
+  color: var(--as-orange-lt) !important;
+}
+
+/* ━━━ CODE BLOCKS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-typeset .highlight {
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--as-rule);
+}
+[data-md-color-scheme="slate"] .md-typeset .highlight {
+  border-color: rgba(224,230,242,0.09);
+}
+.md-typeset .highlight pre {
+  border-top: 3px solid var(--as-orange);
+  border-radius: 0;
+  margin: 0;
+}
+
+/* ━━━ ADMONITIONS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-typeset .admonition, .md-typeset details {
+  border-radius: 4px;
+  border-width: 0 0 0 4px;
+  box-shadow: none;
+  font-size: 0.9em;
+}
+.md-typeset .admonition.tip, .md-typeset details.tip {
+  border-color: #AFC6D2;
+}
+.md-typeset .tip > .admonition-title, .md-typeset .tip > summary {
+  background: rgba(190, 212, 226, 0.14);
+}
+.md-typeset .tip > .admonition-title::before, .md-typeset .tip > summary::before {
+  background-color: #6E8C9E;
+}
+[data-md-color-scheme="slate"] .md-typeset .admonition.tip {
+  border-color: rgba(208, 226, 238, 0.55);
+}
+[data-md-color-scheme="slate"] .md-typeset .tip > .admonition-title {
+  background: rgba(208, 226, 238, 0.06);
+}
+[data-md-color-scheme="slate"] .md-typeset .tip > .admonition-title::before {
+  background-color: rgba(208, 226, 238, 0.82);
+}
+/* Swap tip's default flame glyph for a lightbulb (mask shape; color set above) */
+:root {
+  --md-admonition-icon--tip: url('data:image/svg+xml;charset=utf-8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12,2A7,7 0 0,1 19,9C19,11.38 17.81,13.47 16,14.74V17A1,1 0 0,1 15,18H9A1,1 0 0,1 8,17V14.74C6.19,13.47 5,11.38 5,9A7,7 0 0,1 12,2M9,21V20H15V21A1,1 0 0,1 14,22H10A1,1 0 0,1 9,21M12,4A5,5 0 0,0 7,9C7,11.05 8.23,12.81 10,13.58V16H14V13.58C15.77,12.81 17,11.05 17,9A5,5 0 0,0 12,4Z"/></svg>');
+}
+
+/* ━━━ TABLES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-typeset table:not([class]) {
+  display: table;
+  width: 100%;
+  font-size: 0.9em;
+  border-collapse: collapse;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid var(--as-rule);
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) {
+  border-color: rgba(224,230,242,0.09);
+}
+.md-typeset table:not([class]) th {
+  background: var(--as-navy);
+  color: rgba(224, 230, 242, 0.90);
+  font-weight: 600;
+  font-size: 0.8em;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  padding: 0.6em 0.9em;
+  border: none;
+}
+.md-typeset table:not([class]) td {
+  padding: 0.5em 0.9em;
+  vertical-align: top;
+  border-bottom: 1px solid var(--as-rule);
+  border-left: none; border-right: none; border-top: none;
+}
+.md-typeset table:not([class]) td code,
+.md-typeset table:not([class]) th code {
+  white-space: nowrap;
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
+  border-bottom-color: rgba(224,230,242,0.07);
+}
+.md-typeset table:not([class]) tr:last-child td { border-bottom: none; }
+
+/* Row hover — subtle lift + surveyor-orange edge accent.
+   Light: pale warm wash. Dark: cool steel lift so it never muddies to brown;
+   the orange lives only in the crisp left edge. */
+.md-typeset table:not([class]) td { transition: background-color 0.12s ease; }
+.md-typeset table:not([class]) tbody tr:hover td {
+  background: rgba(212, 98, 26, 0.07);
+}
+.md-typeset table:not([class]) tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--as-orange);
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover td {
+  background: rgba(140, 170, 210, 0.09);
+}
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tbody tr:hover td:first-child {
+  box-shadow: inset 3px 0 0 var(--as-orange-lt);
+}
+
+/* ━━━ COLOR SWATCHES — preset reference tables ━━━━━━━━━━━━━━━━━━━━━━ */
+.md-typeset .as-swatch {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.45em;
+  border-radius: 3px;
+  border: 1px solid var(--as-rule);
+  vertical-align: -0.1em;
+}
+[data-md-color-scheme="slate"] .md-typeset .as-swatch {
+  border-color: rgba(224, 230, 242, 0.30);
+}
+
+/* ━━━ ARCGIS-STYLE SYMBOL SWATCHES — fill + outline drawn together ━━━━
+   One chip per preset, driven by --fill, --stroke, --w custom props.
+   Geometry modifier picks the shape: filled rect, stroked line, or
+   round marker. Hollow polygons simply omit --fill.
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-typeset .as-sym {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 2.1em;
+  height: 1.25em;
+  vertical-align: -0.35em;
+  position: relative;
+}
+
+/* Polygon — filled rectangle with same-symbol outline */
+.md-typeset .as-sym--poly {
+  background: var(--fill, transparent);
+  border: var(--w, 1px) solid var(--stroke, transparent);
+  border-radius: 2px;
+}
+
+/* Polyline — a stroked line, no fill */
+.md-typeset .as-sym--line::before {
+  content: "";
+  position: absolute;
+  left: 6%; right: 6%; top: 50%;
+  height: var(--w, 2px);
+  transform: translateY(-50%);
+  background: var(--stroke);
+  border-radius: 2px;
+}
+
+/* Point / Multipoint — round marker with white halo over a neutral cell
+   so the halo stays visible on both light and dark table rows */
+.md-typeset .as-sym--point {
+  background: var(--as-surface);
+  border: 1px solid var(--as-rule);
+  border-radius: 2px;
+}
+[data-md-color-scheme="slate"] .md-typeset .as-sym--point {
+  background: rgba(224, 230, 242, 0.10);
+  border-color: rgba(224, 230, 242, 0.16);
+}
+.md-typeset .as-sym--point::before {
+  content: "";
+  position: absolute;
+  left: 50%; top: 50%;
+  width: 0.72em; height: 0.72em;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--fill);
+  box-shadow: 0 0 0 var(--w, 1.5px) var(--stroke);
+}
+
+/* ━━━ HERO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.as-hero {
+  position: relative;
+  background: var(--as-slate);
+  border-radius: 6px;
+  padding: 1.25rem 1.75rem 1.25rem 1.75rem;
+  margin: -0.5rem 0 1.5rem;
+  overflow: hidden;
+}
+
+/*!* Fine dot-grid — satellite raster / coordinate grid aesthetic *!*/
+/*.as-hero::before {*/
+/*  content: '';*/
+/*  position: absolute;*/
+/*  inset: 0;*/
+/*  background-image: radial-gradient(*/
+/*    circle,*/
+/*    rgba(255,255,255,0.12) 1px,*/
+/*    transparent 1px*/
+/*  );*/
+/*  background-size: 24px 24px;*/
+/*  pointer-events: none;*/
+/*}*/
+
+/* Orange left rail */
+.as-hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--as-orange);
+}
+
+.as-hero__eyebrow {
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--as-orange-lt);
+  margin-bottom: 0.5em;
+  position: relative; z-index: 1;
+}
+
+.as-hero__title {
+  font-size: 1.8em !important;
+  font-weight: 700 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -0.035em !important;
+  color: rgba(224, 230, 242, 0.97) !important;
+  margin: 0 0 0.8rem !important;
+  border: none !important;
+  padding: 0 !important;
+  position: relative; z-index: 1;
+}
+.as-hero .as-hero__title::before { display: none !important; }
+.as-hero .as-hero__title { border-bottom: none !important; }
+[data-md-color-scheme="slate"] .as-hero .as-hero__title { border-bottom: none !important; }
+
+.as-hero__sub {
+  font-size: 1.1em;
+  line-height: 1.65;
+  color: rgba(224, 230, 242, 0.50);
+  max-width: none;
+  margin: 0 0 1.25em;
+  position: relative; z-index: 1;
+}
+
+.as-hero :not(pre) > code,
+.as-section-hero :not(pre) > code {
+  background: transparent !important;
+  color: var(--as-orange-lt) !important;
+  padding: 0 !important;
+  font-weight: 600;
+}
+
+.as-hero__link,
+.as-hero__link:visited {
+  color: var(--as-orange-lt) !important;
+  text-decoration: none !important;
+  font-weight: 600;
+  font-size: 0.9em;
+  letter-spacing: 0.01em;
+  transition: opacity 0.15s;
+}
+.as-hero__link:hover { opacity: 0.75; }
+
+.as-hero__code-label {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(224, 230, 242, 1.0);
+  margin-bottom: 0.4rem;
+  margin-top: 1.25rem;
+  position: relative; z-index: 1;
+}
+.as-hero__code-label:first-of-type { margin-top: 0; }
+
+.as-hero__code {
+  background: rgba(0,0,0,0.40);
+  border: 2px solid rgba(100, 160, 220, 0.45);
+  border-top: 4px solid var(--as-orange);
+  border-radius: 6px;
+  padding: 1rem 1.2rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.80rem;
+  line-height: 1.72;
+  color: rgba(224, 230, 242, 1.0);
+  position: relative; z-index: 1;
+}
+.as-hero__code .kw  { color: #60AAFF; }   /* keyword blue — brighter */
+.as-hero__code .fn  { color: #FF9F5A; }   /* function orange — more saturated */
+.as-hero__code .st  { color: #7ED97E; }   /* string green — more vivid */
+.as-hero__code .cm  { color: rgba(224,230,242,0.42); font-style: italic; }
+.as-hero__code .p   { color: rgba(224,230,242,0.55); }
+.as-hero__code .num { color: #FFD060; }   /* number yellow — brighter */
+.as-hero__code .op  { color: rgba(224,230,242,0.65); }
+
+/* ━━━ INSTALL ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.as-install {
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  background: var(--as-surface);
+  border: 1px solid var(--as-rule);
+  border-left: 4px solid var(--as-orange);
+  border-radius: 0 4px 4px 0;
+  padding: 0.75em 1.1em;
+  margin: 0 0 2em;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9em;
+  color: var(--as-ink);
+}
+[data-md-color-scheme="slate"] .as-install {
+  background: rgba(224,230,242,0.05);
+  border-color: rgba(224,230,242,0.08);
+  border-left-color: var(--as-orange);
+  color: rgba(224,230,242,0.86);
+}
+.as-install::before {
+  content: '$';
+  color: var(--as-orange);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ━━━ MODULE CARDS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-typeset .grid.cards > ul > li {
+  border: 1px solid var(--as-rule) !important;
+  border-top: 3px solid var(--as-orange) !important;
+  border-radius: 5px !important;
+  background: var(--as-white) !important;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  display: flex !important;
+  flex-direction: column !important;
+  font-size: 1.0em;
+}
+[data-md-color-scheme="slate"] .md-typeset .grid.cards > ul > li {
+  background: rgba(224,230,242,0.04) !important;
+  border-color: rgba(224,230,242,0.09) !important;
+}
+.md-typeset .grid.cards > ul > li:hover {
+  box-shadow: 0 4px 18px rgba(212,98,26,0.12) !important;
+  border-color: var(--as-orange) !important;
+}
+
+/* Push the reference link to the card bottom regardless of body length */
+.md-typeset .grid.cards > ul > li > p:last-child {
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+/* ━━━ BADGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.as-badge {
+  display: inline-block;
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  background: rgba(212, 98, 26, 0.09);
+  color: var(--as-orange-dim);
+  border: 1px solid rgba(212, 98, 26, 0.24);
+  border-radius: 3px;
+  padding: 0.14em 0.48em;
+  vertical-align: middle;
+  margin-left: 0.3em;
+}
+[data-md-color-scheme="slate"] .as-badge { color: var(--as-orange-lt); }
+
+/* ━━━ SECTION HERO — subordinate dark panel, used for Getting Started ━━ */
+.as-section-hero {
+  position: relative;
+  background: var(--as-navy);
+  border-radius: 6px;
+  padding: 1rem 1.5rem 1rem 1.5rem;
+  margin: 1.5rem 0 1rem;
+  overflow: hidden;
+}
+
+.as-section-hero::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 4px; height: 100%;
+  background: var(--as-orange);
+}
+
+.as-section-hero__eyebrow {
+  font-size: 0.65em;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--as-orange-lt);
+  margin-bottom: 0.4em;
+  position: relative; z-index: 1;
+}
+
+.as-section-hero__title {
+  font-size: 1.25em !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+  color: rgba(224, 230, 242, 0.92) !important;
+  margin: 0 0 0.4rem !important;
+  border: none !important;
+  padding: 0 !important;
+  position: relative; z-index: 1;
+}
+.as-section-hero .as-section-hero__title { border-bottom: none !important; }
+[data-md-color-scheme="slate"] .as-section-hero .as-section-hero__title { border-bottom: none !important; }
+
+.as-section-hero__sub {
+  font-size: 1.0em;
+  line-height: 1.65;
+  color: rgba(224, 230, 242, 0.42);
+  margin: 0;
+  position: relative; z-index: 1;
+}
+
+/* ━━━ MODULE NAME — orange monospaced accent used in cards ━━━━━━━━━━━━━ */
+.as-mod {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  color: var(--as-orange-dim);
+}
+[data-md-color-scheme="slate"] .as-mod {
+  color: var(--as-orange-lt);
+}
+
+/* ━━━ MODULE HEADING LINKS — suppress blue, use navy ink ━━━━━━━━━━━━━━ */
+.as-mod-link,
+.as-mod-link:visited,
+.as-mod-link:hover {
+  color: var(--as-ink) !important;
+  text-decoration: none !important;
+}
+[data-md-color-scheme="slate"] .as-mod-link,
+[data-md-color-scheme="slate"] .as-mod-link:visited,
+[data-md-color-scheme="slate"] .as-mod-link:hover {
+  color: rgba(224, 230, 242, 0.92) !important;
+}
+.as-mod-link .as-mod:hover {
+  color: var(--as-orange) !important;
+}
+
+/* ━━━ REFERENCE SECTION DIVIDER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.as-ref-header {
+  background: var(--as-navy);
+  border-radius: 4px;
+  padding: 0.7rem 1.1rem;
+  margin: 3rem 0 2rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.60rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(224, 230, 242, 0.40);
+  border-left: 3px solid var(--as-orange);
+}
+
+/* ━━━ LAYOUT WIDTH ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+/* Widen the content grid on desktop so reference tables aren't cramped.  */
+@media screen and (min-width: 76.25em) {
+  .md-grid { max-width: 68rem; }
+}
+
+/* ━━━ FOOTER ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.md-footer { background: var(--as-navy); border-top: 2px solid var(--as-orange); }
+.md-footer-meta { background: #101620; }
+
+.md-top {
+  background: var(--as-surface);
+  color: var(--as-navy);
+  border: 1px solid var(--as-orange);
+  border-radius: 3px;
+}
+.md-top:hover { background: var(--as-orange); color: white; }
+/* ━━━ HEADER BREADCRUMB — ArcSmith / Docs ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.as-breadcrumb {
+  display: flex !important;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.as-site-link {
+  color: rgba(224,230,242,0.45) !important;
+  text-decoration: none !important;
+  font-weight: 700;
+  transition: color 0.15s;
+}
+.as-site-link:hover {
+  color: rgba(224,230,242,0.85) !important;
+}
+
+.as-sep {
+  color: rgba(224,230,242,0.20);
+  font-size: 0.85rem;
+  font-weight: 400;
+  user-select: none;
+}
+
+.as-home-link {
+  color: rgba(224,230,242,0.92) !important;
+  text-decoration: none !important;
+  display: inline !important;
+}
+.as-home-link:hover { opacity: 0.80; }
+/* ━━━ DOWNLOAD STRIP ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.as-download-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  padding: 1.1rem 0;
+  border-top: 1px solid var(--as-rule);
+  border-bottom: 1px solid var(--as-rule);
+  margin: 0.5rem 0 1.5rem;
+}
+[data-md-color-scheme="slate"] .as-download-strip {
+  border-color: rgba(224,230,242,0.09);
+}
+
+.as-download-strip__title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--as-ink);
+  margin: 0 0 0.2em;
+}
+[data-md-color-scheme="slate"] .as-download-strip__title {
+  color: rgba(224,230,242,0.88);
+}
+
+.as-download-strip__sub {
+  font-size: 0.78rem;
+  color: var(--as-ink-lt);
+  margin: 0;
+}
+[data-md-color-scheme="slate"] .as-download-strip__sub {
+  color: rgba(224,230,242,0.42);
+}
+
+.as-download-strip__btn,
+.as-download-strip__btn:visited {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  padding: 0.45em 1em;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--as-ink) !important;
+  border: 1px solid var(--as-rule);
+  border-radius: 4px;
+  text-decoration: none !important;
+  white-space: nowrap;
+  transition: border-color 0.15s, background 0.15s;
+  flex-shrink: 0;
+}
+.as-download-strip__btn::before {
+  content: "↓";
+  color: var(--as-orange);
+  font-weight: 700;
+}
+.as-download-strip__btn:hover {
+  border-color: var(--as-orange);
+  background: var(--as-orange-glow);
+}
+[data-md-color-scheme="slate"] .as-download-strip__btn,
+[data-md-color-scheme="slate"] .as-download-strip__btn:visited {
+  color: rgba(224,230,242,0.80) !important;
+  border-color: rgba(224,230,242,0.12);
+}
+[data-md-color-scheme="slate"] .as-download-strip__btn:hover {
+  border-color: var(--as-orange-lt);
+  background: var(--as-orange-glow);
+}

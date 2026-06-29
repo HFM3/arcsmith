@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+  <!-- Material emits the SVG favicon via theme.favicon; add PNG fallback + apple-touch. -->
+  <link rel="icon" type="image/png" sizes="512x512" href="/docs/assets/images/favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/docs/assets/images/apple-touch-icon.png">
+  <!-- Social card (matches the homepage hero) for rich link previews -->
+  <meta property="og:image" content="https://arcsmith.dev/docs/images/social-card.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="ArcSmith - A tool builder's toolbox. ArcPy toolbox utilities.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://arcsmith.dev/docs/images/social-card.png">
+{% endblock %}
+
+{% block header %}
+{% set class = "md-header" %}
+{% if "navigation.tabs.sticky" in features %}
+  {% set class = class ~ " md-header--shadow md-header--lifted" %}
+{% elif "navigation.tabs" not in features %}
+  {% set class = class ~ " md-header--shadow" %}
+{% endif %}
+{% import "partials/language.html" as lang with context %}
+<header class="{{ class }}" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
+    <label class="md-header__button md-icon" for="__drawer">
+      {% set icon = config.theme.icon.menu or "material/menu" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis as-breadcrumb">
+            <a href="{{ config.extra.homepage | d('/', true) }}" class="as-home-link as-site-link">ArcSmith</a>
+            <span class="as-sep">/</span>
+            <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}"
+               class="as-home-link"
+               onclick="if(window.__isHomepage){window.scrollTo({top:0,behavior:'smooth'});return false;">Docs</a>
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            {% if page and page.meta and page.meta.title %}
+              {{ page.meta.title }}
+            {% elif page %}
+              {{ page.title }}
+            {% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% if config.theme.palette %}
+      {% if not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+    {% endif %}
+    {% if not config.theme.palette is mapping %}
+      {% include "partials/javascripts/palette.html" %}
+    {% endif %}
+    {% if config.extra.alternate %}
+      {% include "partials/alternate.html" %}
+    {% endif %}
+    {% if "material/search" in config.plugins %}
+      {% set search = config.plugins["material/search"] | attr("config") %}
+      {% if search.enabled %}
+        <label class="md-header__button md-icon" for="__search">
+          {% set icon = config.theme.icon.search or "material/magnify" %}
+          {% include ".icons/" ~ icon ~ ".svg" %}
+        </label>
+        {% include "partials/search.html" %}
+      {% endif %}
+    {% endif %}
+    {% if config.repo_url %}
+      <div class="md-header__source">
+        {% include "partials/source.html" %}
+      </div>
+    {% endif %}
+  </nav>
+  {% if "navigation.tabs.sticky" in features %}
+    {% if "navigation.tabs" in features %}
+      {% include "partials/tabs.html" %}
+    {% endif %}
+  {% endif %}
+</header>
+{% endblock %}

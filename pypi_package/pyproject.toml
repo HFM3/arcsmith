@@ -1,0 +1,59 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "arcsmith"
+version = "0.0.6"
+
+description = "Utilities for building clean, maintainable ArcPy toolboxes"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "HFM3" },
+]
+keywords = [
+    "arcgis",
+    "arcpy",
+    "geoprocessing",
+    "gis",
+    "toolbox",
+    "pyt",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://arcsmith.dev"
+Documentation = "https://arcsmith.dev"
+Repository = "https://github.com/HFM3/arcsmith"
+Issues = "https://github.com/HFM3/arcsmith/issues"
+
+# Explicit allowlist: only these paths ship in the source distribution.
+# Anything else in the build directory (docs site, samples, dist artifacts,
+# caches) cannot be bundled, regardless of .gitignore state or build cwd.
+# This is what 0.0.3 was pulled for.
+[tool.hatch.build.targets.sdist]
+include = [
+    "src/arcsmith",
+    "tests",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "pyproject.toml",
+]
+# Toolbox fixtures stay in git for contributors but don't need to ship on PyPI.
+exclude = [
+    "tests/toolboxes",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/arcsmith"]
