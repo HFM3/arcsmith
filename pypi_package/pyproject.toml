@@ -4,9 +4,9 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arcsmith"
-version = "0.0.6"
+version = "0.0.7"
 
-description = "Utilities for building clean, maintainable ArcPy toolboxes"
+description = "A Python library for GIS researchers building Python toolboxes (.pyt)"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [

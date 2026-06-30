@@ -15,6 +15,36 @@ from 1.0.0 onward.
 > control on the project, so entries are reconstructed from the published
 > distributions on PyPI rather than from a commit history.
 
+## [0.0.7]
+
+### Added
+- `lyr.move`: reorder a layer within its current level in the table of contents,
+  either relative to a sibling (`relative_to` + `placement`) or to the top or
+  bottom of its level (`position="TOP"`/`"BOTTOM"`). It changes order only, not
+  grouping, and leaves a layer already at the requested edge in place.
+
+### Changed
+- **Breaking:** `lyr.apply_lyrx` reworked to the same dual-mode shape as
+  `lyr.simple_sym`: it now accepts a single layer object as `lyr` (returned
+  directly) in addition to map lookup. The signature is now
+  `apply_lyrx(lyrx_src, lyr=None, *, target_map=None, lyr_name=None,
+  lyr_source=None, geom_type=None)`, so `lyrx_src` is the first argument and
+  `target_map` is keyword-only. Existing map-lookup calls such as
+  `apply_lyrx(target_map, lyrx_src, lyr_name=...)` must move to
+  `apply_lyrx(lyrx_src, target_map=target_map, lyr_name=...)`.
+- **Breaking:** keyword-only arguments tightened across `lyr` for consistency
+  with `add`/`simple_sym`/`apply_lyrx`. `get` and `remove` now take the
+  match/options arguments keyword-only (everything after `target_map`):
+  `get(target_map, *, lyr_name=None, lyr_source=None, geom_type=None)` and
+  `remove(target_map, *, lyr_name=None, lyr_source=None, geom_type=None,
+  silent=False, layer=None)`. `get_grp` makes `silent` keyword-only
+  (`get_grp(target_map, grp_name=None, *, silent=False)`), and `add_to_grp`
+  makes its ordering options keyword-only
+  (`add_to_grp(target_map, grp_lyr, layer, *, position="BOTTOM",
+  relative_to=None, placement="AFTER", remove_original=True)`). Calls that
+  passed these positionally must switch to keywords, e.g.
+  `get(m, "rivers")` becomes `get(m, lyr_name="rivers")`.
+
 ## [0.0.6]
 
 ### Added

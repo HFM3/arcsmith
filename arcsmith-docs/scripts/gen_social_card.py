@@ -96,7 +96,7 @@ draw.text((LEFT, line2_y), "toolbox.", font=t_font, fill=ORANGE_LT)
 
 # --- subtitle (wrapped) -------------------------------------------------
 s_font = sans(42)
-sub = "Refined arcpy toolbox design for research"
+sub = "Refined toolbox utilities for GIS research"
 max_w = 900
 words, lines, cur = sub.split(), [], ""
 for w in words:

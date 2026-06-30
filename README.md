@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="arcsmith-docs/docs/images/social-card.png" alt="ArcSmith - A tool builder's toolbox. ArcPy toolbox utilities." width="760">
+  <img src="arcsmith-docs/docs/images/social-card.png" alt="ArcSmith - For tool builders. Shape rough scripts into polished .pyt tools." width="760">
 </p>
 
 # ArcSmith
@@ -10,9 +10,9 @@
 [![PyPI](https://img.shields.io/pypi/v/arcsmith.svg)](https://pypi.org/project/arcsmith/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](pypi_package/LICENSE)
 
-### Utilities for building clean, maintainable ArcPy toolboxes.
+### Shape rough scripts into polished .pyt tools.
 
-ArcSmith is a library for building **ArcGIS Pro Python toolboxes** (`.pyt` files). It does not replace `arcpy`. It works on top of it and handles common toolbox development tasks such as: reading parameter state, building quoted SQL `WHERE` clauses, applying symbology, populating value lists, and creating output geodatabases.
+ArcSmith is a Python library for GIS researchers. It does not replace `arcpy`; it works on top of it, handling common **Python toolbox** (`.pyt`) tasks such as reading parameter state, building quoted SQL `WHERE` clauses, applying symbology, populating value lists, and creating output geodatabases.
 
 Full documentation at [ArcSmith.dev](https://arcsmith.dev)
 
@@ -53,7 +53,7 @@ APA, Chicago, and BibTeX formats, kept current with each release, are at
   author  = {Mros, III, Henry F.},
   title   = {ArcSmith: ArcPy Toolbox Utilities},
   year    = {2026},
-  version = {0.0.6},
+  version = {0.0.7},
   url     = {https://pypi.org/project/arcsmith/}
 }
 ```

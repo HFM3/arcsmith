@@ -1,4 +1,4 @@
-# ArcSmith: ArcPy toolbox utilities
+# ArcSmith: GIS toolbox utilities
 # Copyright (c) 2026 @HFM3 (https://github.com/HFM3)
 # SPDX-License-Identifier: MIT
 

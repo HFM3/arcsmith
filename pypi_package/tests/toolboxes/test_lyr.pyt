@@ -16,8 +16,9 @@ active map:
     - get_grp   (look up group layers)
     - add_to_grp  (move a layer into a group, with precise ordering)
     - make_grp    (create a group layer, optionally filling it on creation)
-    - apply_lyrx    (push .lyrx symbology onto matched layers)
+    - apply_lyrx    (push .lyrx symbology onto a layer object or matched layers)
     - remove        (remove layers by name or source)
+    - move          (reorder a layer within its level: relative or top/bottom)
 
 IMPORTANT: run these from a project that has an active map with some layers in
 it. Each tool operates on ``ArcGISProject("CURRENT").activeMap``.
@@ -75,6 +76,7 @@ class Toolbox:
             ApplyLyrx,
             RemoveLayer,
             MakeGroup,
+            MoveLayer,
         ]
 
 
@@ -576,9 +578,11 @@ class ApplyLyrx:
         self.label = "06 Apply Lyrx"
         self.description = (
             "Test arcsmith.lyr.apply_lyrx - push symbology from a .lyrx file "
-            "onto matching layers in the active map. Match by name (all "
-            "matches, optional geometry filter) or by source (first match). "
-            "Exactly one of Name / Source is required."
+            "onto layers in the active map. Two modes: map-lookup (match by "
+            "name, all matches with optional geometry filter, or by source, "
+            "first match), or direct layer-object mode (resolve the first "
+            "name match to a Layer object and style it directly, returning "
+            "that one layer). Direct mode takes precedence when set."
         )
 
     def getParameterInfo(self):
@@ -617,7 +621,15 @@ class ApplyLyrx:
         p3.filter.type = "ValueList"
         p3.filter.list = ["Point", "Polyline", "Polygon", "Multipoint"]
 
-        return [p0, p1, p2, p3]
+        p4 = arcpy.Parameter(
+            displayName="Direct Layer Mode (style first name match as a Layer object)",
+            name="lyr_obj",
+            datatype="GPFeatureLayer",
+            parameterType="Optional",
+            direction="Input",
+        )
+
+        return [p0, p1, p2, p3, p4]
 
     def isLicensed(self):
         return True
@@ -634,9 +646,24 @@ class ApplyLyrx:
         lyr_name = parameters[1].valueAsText or None
         lyr_source = parameters[2].valueAsText or None
         geom_type = parameters[3].valueAsText or None
+        lyr_obj_name = parameters[4].valueAsText or None
+
+        if lyr_obj_name is not None:
+            # Direct lyr mode: resolve a real Layer object from the active map
+            # and hand it straight to apply_lyrx with no map-lookup args. This
+            # exercises the single-layer path, which returns the styled layer
+            # itself rather than a list.
+            layer = arcsmith.lyr.get(m, lyr_name=lyr_obj_name)[0]
+            result = arcsmith.lyr.apply_lyrx(lyrx_src, layer)
+            arcpy.AddMessage(
+                f"Applied {Path(lyrx_src).name} to layer object "
+                f"{result.name!r} (direct lyr mode)."
+            )
+            return
 
         updated = arcsmith.lyr.apply_lyrx(
-            m, lyrx_src, lyr_name=lyr_name, lyr_source=lyr_source, geom_type=geom_type
+            lyrx_src, target_map=m, lyr_name=lyr_name, lyr_source=lyr_source,
+            geom_type=geom_type
         )
         arcpy.AddMessage(f"Applied {Path(lyrx_src).name} to {len(updated)} layer(s):")
         for lyr in updated:
@@ -796,6 +823,110 @@ class MakeGroup:
         grp = arcsmith.lyr.make_grp(m, grp_name, layers=layers, parent_grp=parent)
         arcpy.AddMessage(f"Created group {grp.name!r}")
         arcpy.AddMessage(f"Children: {[c.name for c in grp.listLayers()]}")
+
+    def postExecute(self, parameters):
+        return
+
+
+# ===========================================================================
+# 9. move
+# ===========================================================================
+class MoveLayer:
+    def __init__(self):
+        self.label = "09 Move Layer"
+        self.description = (
+            "Test arcsmith.lyr.move - reorder a layer within its current level "
+            "(the map's top level, or whichever group it lives in). Two modes, "
+            "use exactly one: fill 'Relative To' (with BEFORE/AFTER) to drop the "
+            "layer next to a sibling, or fill 'Position' (TOP/BOTTOM) to send it "
+            "to the edge of its level. Leaving both empty or filling both is an "
+            "error, by design."
+        )
+
+    def getParameterInfo(self):
+        p0 = arcpy.Parameter(
+            displayName="Layer to Move (drag from Contents, or pick)",
+            name="lyr_name",
+            datatype="GPFeatureLayer",
+            parameterType="Required",
+            direction="Input",
+        )
+
+        p1 = arcpy.Parameter(
+            displayName="Relative To (sibling layer; relative mode)",
+            name="relative_to",
+            datatype="GPLayer",
+            parameterType="Optional",
+            direction="Input",
+        )
+
+        p2 = arcpy.Parameter(
+            displayName="Placement (when using Relative To)",
+            name="placement",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input",
+        )
+        p2.filter.type = "ValueList"
+        p2.filter.list = ["BEFORE", "AFTER"]
+        p2.value = "BEFORE"
+
+        p3 = arcpy.Parameter(
+            displayName="Position (absolute mode)",
+            name="position",
+            datatype="GPString",
+            parameterType="Optional",
+            direction="Input",
+        )
+        p3.filter.type = "ValueList"
+        p3.filter.list = ["TOP", "BOTTOM"]
+
+        return [p0, p1, p2, p3]
+
+    def isLicensed(self):
+        return True
+
+    def updateParameters(self, parameters):
+        return
+
+    def updateMessages(self, parameters):
+        return
+
+    def execute(self, parameters, messages):
+        m = _active_map()
+        # Layer parameters yield the picked layers' TOC names; resolve the layer
+        # to move back to its Layer object. Pass only the arguments the user
+        # actually supplied, so move's own validation handles the
+        # neither/both-modes cases.
+        lyr_name = parameters[0].valueAsText
+        relative_to_name = parameters[1].valueAsText or None
+        placement = parameters[2].valueAsText or "BEFORE"
+        position = parameters[3].valueAsText or None
+
+        layer = arcsmith.lyr.get(m, lyr_name=lyr_name)[0]
+
+        kwargs = {}
+        if relative_to_name:
+            relative_to = next(
+                (lyr for lyr in m.listLayers() if lyr.name == relative_to_name), None
+            )
+            if relative_to is None:
+                raise arcpy.ExecuteError(
+                    f"No layer named {relative_to_name!r} in the map."
+                )
+            kwargs["relative_to"] = relative_to
+            kwargs["placement"] = placement
+        if position:
+            kwargs["position"] = position
+
+        moved = arcsmith.lyr.move(m, layer, **kwargs)
+
+        # Report the new order of the moved layer's level for confirmation.
+        parent = str(moved.longName).rpartition("\\")[0]
+        order = [lyr.name for lyr in m.listLayers()
+                 if str(lyr.longName).rpartition("\\")[0] == parent]
+        arcpy.AddMessage(f"Moved {moved.name!r}.")
+        arcpy.AddMessage(f"Level order is now: {order}")
 
     def postExecute(self, parameters):
         return

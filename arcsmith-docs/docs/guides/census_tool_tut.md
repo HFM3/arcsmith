@@ -790,8 +790,8 @@ def postExecute(self, parameters):
         # Apply the complex .lyrx symbology to the States layer now that it
         # is committed to the map.
         arcs.lyr.apply_lyrx(
-            active_map,
             tool_dir / "lyrx" / "state_boundary.lyrx",
+            target_map=active_map,
             lyr_name="States",
         )
 
@@ -1026,8 +1026,8 @@ class CensusRegions:
             active_map = aprx.activeMap
 
             arcs.lyr.apply_lyrx(
-                active_map,
                 tool_dir / "lyrx" / "state_boundary.lyrx",
+                target_map=active_map,
                 lyr_name="States",
             )
 
@@ -1076,7 +1076,7 @@ class CensusRegions:
 | `arcs.fc.export_fc(fc, output, fields, keep, where_clause)` | Exports a feature class with field and row filters in one call |
 | `arcs.lyr.add(map, src, lyr_name, ...)` | Adds a data source to a map, optionally applying inline style arguments or a `.lyrx` file |
 | `arcs.lyr.simple_sym(lyr, fill_color, stroke_color, stroke_width)` | Applies simple fill and stroke symbology to a layer inline, with no `.lyrx` file |
-| `arcs.lyr.apply_lyrx(map, lyrx, lyr_name)` | Applies symbology from a `.lyrx` file to named layers in the map |
-| `arcs.lyr.get(map, lyr_name)` | Retrieves layer objects from the map by name for repositioning or inspection |
+| `arcs.lyr.apply_lyrx(lyrx, target_map=map, lyr_name=...)` | Applies symbology from a `.lyrx` file to a layer object or to named layers in the map |
+| `arcs.lyr.get(map, lyr_name=...)` | Retrieves layer objects from the map by name for repositioning or inspection |
 
 <br><br><br><br><br>

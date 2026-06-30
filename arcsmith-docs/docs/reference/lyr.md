@@ -7,6 +7,7 @@
 <li>Style from named presets (e.g. <code>simple_blue</code>, <code>lake</code>, <code>highlight_pink</code>) for attractive output</li>
 <li>Retrieve or remove layers from the map TOC with optional geometry type filtering</li>
 <li>Create group layers, retrieve them by name, and move existing layers into a group with precise ordering</li>
+<li>Reorder a layer within its current level, relative to a sibling or to the top/bottom</li>
 </ul>
 </div>
 
@@ -23,12 +24,12 @@ Adds a data source to a map as a new layer with optional symbology.
 
 ```python
 add(target_map, lyr_src, lyr_name=None, *, lyrx_src=None, preset=None,
-    fill_color=_UNSET, fill_opacity=_UNSET, stroke_color=_UNSET, stroke_width=_UNSET) -> arcpy.mp.Layer
+    fill_color=<omitted>, fill_opacity=<omitted>, stroke_color=<omitted>, stroke_width=<omitted>) -> arcpy.mp.Layer
 ```
 
 Everything after `lyr_name` is keyword-only. Supply `lyrx_src`, `preset`, or any of the explicit style arguments to take control of symbology; `lyrx_src` and `preset` are mutually exclusive.
 
-The style arguments default to `_UNSET`, a sentinel meaning "not passed," which is distinct from `None`. Omitting an argument falls back to the preset (or the random default), whereas passing `None` explicitly leaves that property as the layer already has it.
+`<omitted>` marks a style argument you do not pass. It is distinct from `None`: omitting an argument falls back to the preset (or the random default), whereas passing `None` explicitly leaves that property as the layer already has it. Neither clears existing symbology.
 
 | Parameter    | Type                               | Default  | Description                                                                      |
 |--------------|------------------------------------|----------|----------------------------------------------------------------------------------|
@@ -37,7 +38,7 @@ The style arguments default to `_UNSET`, a sentinel meaning "not passed," which 
 | `lyr_name`   | `str`                              | `None`   | Display name for the layer in the TOC. Defaults to the source name.              |
 | `lyrx_src`   | `str` or `Path`                    | `None`   | Keyword-only. Path to a `.lyrx` file. If provided, its symbology is applied and the stylish default is skipped. Mutually exclusive with `preset`. |
 | `preset`     | `str` or `dict`                    | `None`   | Keyword-only. A registered preset name (a key of `PRESETS`) or a one-off style `dict`, applied via [`simple_sym`](lyr_presets.md). When omitted (and no explicit style args), a curated simple preset matched to the layer's geometry is applied at a random hue. Mutually exclusive with `lyrx_src`. |
-| `fill_color` `fill_opacity` `stroke_color` `stroke_width` | see `simple_sym` | unset | Keyword-only style overrides forwarded to `simple_sym`. Passing any suppresses the random default and applies the given style (on top of `preset` if also supplied). |
+| `fill_color` `fill_opacity` `stroke_color` `stroke_width` | see `simple_sym` | omitted | Keyword-only style overrides forwarded to `simple_sym`. Passing any suppresses the random default and applies the given style (on top of `preset` if also supplied). |
 
 !!! success "Returns"
     `arcpy.mp.Layer`: the newly added layer.
@@ -93,9 +94,11 @@ lyr = arcsmith.lyr.add(target_map, "memory/trails_clip", lyr_name="Trails (clipp
 Moves an existing layer into a group layer, with optional precise ordering against a sibling, and optionally removes the original top-level layer.
 
 ```python
-add_to_grp(target_map, grp_lyr, layer, position="BOTTOM",
+add_to_grp(target_map, grp_lyr, layer, *, position="BOTTOM",
            relative_to=None, placement="AFTER", remove_original=True) -> arcpy.mp.Layer
 ```
+
+The three layer arguments are positional; every option after them (`position`, `relative_to`, `placement`, `remove_original`) is keyword-only.
 
 `addLayerToGroup` only *copies* the layer into the group and leaves the original top-level layer in place, so this function runs the full sequence: copy into the group, locate the in-group copy, optionally move it relative to a sibling, and optionally remove the original.
 
@@ -104,10 +107,10 @@ add_to_grp(target_map, grp_lyr, layer, position="BOTTOM",
 | `target_map`      | `arcpy.mp.Map`         | required | Map object containing both the group layer and the layer to move.                                                |
 | `grp_lyr`         | `arcpy.mp.Layer`       | required | The destination group layer (e.g. from `get_grp`).                                                            |
 | `layer`           | `arcpy.mp.Layer`       | required | The layer to move into the group (e.g. from `get`).                                                           |
-| `position`        | `'TOP'` or `'BOTTOM'`  | `'BOTTOM'`| Initial placement within the group, passed to `addLayerToGroup`. Case-insensitive.                              |
-| `relative_to`     | `arcpy.mp.Layer`       | `None`   | A layer already inside the group to position the moved layer against. When given, a `moveLayer` call runs after the add. Must already be a child of `grp_lyr`. |
-| `placement`       | `'BEFORE'` or `'AFTER'`| `'AFTER'`| Where to place the moved layer relative to `relative_to`. Case-insensitive. Ignored when `relative_to` is `None`. |
-| `remove_original` | `bool`                 | `True`   | If `True`, remove the original top-level layer after copying, leaving only the in-group copy.                     |
+| `position`        | `'TOP'` or `'BOTTOM'`  | `'BOTTOM'`| **Keyword-only.** Initial placement within the group, passed to `addLayerToGroup`. Case-insensitive.            |
+| `relative_to`     | `arcpy.mp.Layer`       | `None`   | **Keyword-only.** A layer already inside the group to position the moved layer against. When given, a `moveLayer` call runs after the add. Must already be a child of `grp_lyr`. |
+| `placement`       | `'BEFORE'` or `'AFTER'`| `'AFTER'`| **Keyword-only.** Where to place the moved layer relative to `relative_to`. Case-insensitive. Ignored when `relative_to` is `None`. |
+| `remove_original` | `bool`                 | `True`   | **Keyword-only.** If `True`, remove the original top-level layer after copying, leaving only the in-group copy.   |
 
 !!! success "Returns"
     `arcpy.mp.Layer`: the in-group copy of the layer.
@@ -145,31 +148,34 @@ arcsmith.lyr.add_to_grp(target_map, grp, riv, remove_original=False)
 
 ## apply_lyrx
 
-Applies symbology from a `.lyrx` file to one or more layers already present in the map TOC, matched by display name or data source path.
+Applies symbology from a `.lyrx` file to one or more layers, by layer reference, display name, or data source path.
 
 ```python
-apply_lyrx(target_map, lyrx_src, lyr_name=None, lyr_source=None, geom_type=None) -> list
+apply_lyrx(lyrx_src, lyr=None, *,
+           target_map=None, lyr_name=None, lyr_source=None, geom_type=None) -> arcpy.mp.Layer | list
 ```
+
+Every argument after `lyr` is keyword-only.
 
 | Parameter    | Type                                          | Default  | Description                                                                                                 |
 |--------------|-----------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------|
-| `target_map` | `arcpy.mp.Map`                                | required | Map object containing the layer(s) to update.                                                               |
-| `lyrx_src`   | `str` or `Path`                               | required | Path to the `.lyrx` file containing the symbology to apply.                                                |
-| `lyr_name`   | `str`                                         | `None`   | Display name to match. All layers with this name are updated.                                               |
-| `lyr_source` | `str` or `Path`                               | `None`   | Data source path to match. Only the first exact match is updated.                                           |
-| `geom_type`  | `'Point'`, `'Polyline'`, `'Polygon'`, or `'Multipoint'` | `None`   | Geometry type filter when matching by `lyr_name`. Case-insensitive. Ignored when matching by `lyr_source`. |
+| `lyrx_src`   | `str` or `Path`                               | required | Path to the `.lyrx` file whose symbology is applied.                                                       |
+| `lyr`        | `arcpy.mp.Layer`                              | `None`   | A single layer to style directly. Mutually exclusive with `target_map`, `lyr_name`, and `lyr_source`.       |
+| `target_map` | `arcpy.mp.Map`                                | `None`   | **Keyword-only.** Map object containing the layer(s) to update. Required with `lyr_name` or `lyr_source`.   |
+| `lyr_name`   | `str`                                         | `None`   | **Keyword-only.** Display name to match. All layers with this name are updated. Mutually exclusive with `lyr_source`. |
+| `lyr_source` | `str` or `Path`                               | `None`   | **Keyword-only.** Data source path to match. Only the first exact match is updated. Mutually exclusive with `lyr_name`. |
+| `geom_type`  | `'Point'`, `'Polyline'`, `'Polygon'`, or `'Multipoint'` | `None`   | **Keyword-only.** Geometry type filter when matching by `lyr_name`. Case-insensitive. Ignored when matching by `lyr_source` or `lyr`. |
 
 !!! success "Returns"
-    list of `arcpy.mp.Layer`: all layers that were updated.
+    `arcpy.mp.Layer` in `lyr` mode. `list of arcpy.mp.Layer` in map-lookup mode.
 
 !!! failure "Raises"
-    `ValueError` if neither or both of `lyr_name` and `lyr_source` are provided.
+    `ValueError` if both `lyr` and map-lookup arguments are provided, or if neither mode is specified.
 
-    `ValueError` if no matching layers are found in the map.
+    `ValueError` if no matching layers are found (map-lookup mode).
 
-
-!!! note
-    Exactly one of `lyr_name` or `lyr_source` must be provided on each call. Matching by `lyr_name` updates **all** layers with that name. Matching by `lyr_source` updates only the **first** exact match.
+!!! note "Matching modes"
+    Exactly one of `lyr`, or `target_map` with `lyr_name` or `lyr_source`, must be used per call. Matching by `lyr_name` updates **all** layers with that name; matching by `lyr_source` updates only the **first** exact match.
 
 !!! note "Memory workspace"
     Memory layers should always be matched by `lyr_name` using their TOC
@@ -179,14 +185,17 @@ apply_lyrx(target_map, lyrx_src, lyr_name=None, lyr_source=None, geom_type=None)
 **Examples**
 
 ```python
+# Style a layer object directly
+arcsmith.lyr.apply_lyrx("path/to/trails.lyrx", lyr)
+
 # Update all layers named "rivers"
-lyrs = arcsmith.lyr.apply_lyrx(target_map, "path/to/trails.lyrx", lyr_name="rivers")
+lyrs = arcsmith.lyr.apply_lyrx("path/to/trails.lyrx", target_map=current_map, lyr_name="rivers")
 
 # Update only polyline "rivers" layers
-lyrs = arcsmith.lyr.apply_lyrx(target_map, "path/to/trails.lyrx", lyr_name="rivers", geom_type="Polyline")
+lyrs = arcsmith.lyr.apply_lyrx("path/to/trails.lyrx", target_map=current_map, lyr_name="rivers", geom_type="Polyline")
 
 # Update a single layer by data source path
-lyrs = arcsmith.lyr.apply_lyrx(target_map, "path/to/trails.lyrx", lyr_source="path/to/trails")
+lyrs = arcsmith.lyr.apply_lyrx("path/to/trails.lyrx", target_map=current_map, lyr_source="path/to/trails")
 ```
 
 ---
@@ -196,15 +205,17 @@ lyrs = arcsmith.lyr.apply_lyrx(target_map, "path/to/trails.lyrx", lyr_source="pa
 Retrieves layer(s) from the map TOC by display name or data source path.
 
 ```python
-get(target_map, lyr_name=None, lyr_source=None, geom_type=None) -> list
+get(target_map, *, lyr_name=None, lyr_source=None, geom_type=None) -> list
 ```
+
+Every argument after `target_map` is keyword-only.
 
 | Parameter    | Type                                          | Default  | Description                                                                                                     |
 |--------------|-----------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------|
 | `target_map` | `arcpy.mp.Map`                                | required | Map object to search.                                                                                           |
-| `lyr_name`   | `str`                                         | `None`   | Display name to match. All layers with this name are returned.                                                  |
-| `lyr_source` | `str` or `Path`                               | `None`   | Data source path to match. Only the first exact match is returned.                                              |
-| `geom_type`  | `'Point'`, `'Polyline'`, `'Polygon'`, or `'Multipoint'` | `None`   | Geometry type filter when matching by `lyr_name`. Case-insensitive. Ignored when matching by `lyr_source`.     |
+| `lyr_name`   | `str`                                         | `None`   | **Keyword-only.** Display name to match. All layers with this name are returned.                                |
+| `lyr_source` | `str` or `Path`                               | `None`   | **Keyword-only.** Data source path to match. Only the first exact match is returned.                            |
+| `geom_type`  | `'Point'`, `'Polyline'`, `'Polygon'`, or `'Multipoint'` | `None`   | **Keyword-only.** Geometry type filter when matching by `lyr_name`. Case-insensitive. Ignored when matching by `lyr_source`. |
 
 !!! success "Returns"
     list of `arcpy.mp.Layer`: all matching layers. When matching by `lyr_source`, the list contains at most one entry.
@@ -245,14 +256,14 @@ lyrs = arcsmith.lyr.get(target_map, lyr_name="trails_memory")
 Retrieves group layer(s) from the map TOC by display name.
 
 ```python
-get_grp(target_map, grp_name=None, silent=False) -> list
+get_grp(target_map, grp_name=None, *, silent=False) -> list
 ```
 
 | Parameter    | Type             | Default  | Description                                                                                          |
 |--------------|------------------|----------|------------------------------------------------------------------------------------------------------|
 | `target_map` | `arcpy.mp.Map`   | required | Map object to search.                                                                                |
 | `grp_name`   | `str`            | `None`   | Display name to match. All matching group layers are returned. If omitted, every group layer in the map is returned. |
-| `silent`     | `bool`           | `False`  | If `True`, return an empty list instead of raising when a named match finds nothing.                |
+| `silent`     | `bool`           | `False`  | **Keyword-only.** If `True`, return an empty list instead of raising when a named match finds nothing. |
 
 !!! success "Returns"
     list of `arcpy.mp.Layer`: all matching group layers.
@@ -280,20 +291,20 @@ grps = arcsmith.lyr.get_grp(target_map, grp_name="Scratch", silent=True)
 
 ## make_grp
 
-Creates a group layer in a map and returns it, optionally moving existing layers into it as it is created. The group is created at the top of the map's table of contents.
+Creates a group layer in a map and returns it, optionally moving existing layers into it as it is created. The new group is added as the topmost entry of its container: the map's table of contents by default, or the parent group when `parent_grp` is given.
 
 ```python
 make_grp(target_map, grp_name, layers=None, *, parent_grp=None) -> arcpy.mp.Layer
 ```
 
-Pass `layers` to fill the group in the same call instead of creating it empty and adding to it afterward. Each layer is moved in: it is copied into the group and its original top-level entry is removed, so it ends up only inside the group rather than duplicated. For finer control over a single layer, such as positioning it against a sibling or keeping the original top-level entry, create the group here and call [`add_to_grp`](#add_to_grp) per layer instead.
+Pass `layers` to fill the group in the same call instead of creating it empty and adding to it afterward. Each layer is moved in: it is copied into the group and its original top-level entry is removed, so it ends up only inside the group rather than duplicated. List order is kept top to bottom: each layer is added at the bottom of the group as the list is processed, so the first item in the list ends up at the top of the group and the last at the bottom. For finer control over a single layer, such as positioning it against a sibling or keeping the original top-level entry, create the group here and call [`add_to_grp`](#add_to_grp) per layer instead.
 
 | Parameter    | Type                                          | Default  | Description                                                                                                                          |
 |--------------|-----------------------------------------------|----------|-------------------------------------------------------------------------------------------------------------------------------------|
 | `target_map` | `arcpy.mp.Map`                                | required | Map object to create the group layer in.                                                                                            |
 | `grp_name`   | `str`                                         | required | Display name for the new group layer in the TOC.                                                                                    |
-| `layers`     | `arcpy.mp.Layer` or list of `arcpy.mp.Layer`  | `None`   | Existing map layer(s) to move into the new group, in order. A single layer may be passed without a list. Each is removed from its original top-level position. Default `None` (the group is created empty). |
-| `parent_grp` | `arcpy.mp.Layer`                              | `None`   | Keyword-only. An existing group layer to create the new group inside, producing a nested group. Default `None` (created at the top level of the TOC). |
+| `layers`     | `arcpy.mp.Layer` or list of `arcpy.mp.Layer`  | `None`   | Existing map layer(s) to move into the new group. List order is kept top to bottom in the group (first item at the top, last at the bottom). A single layer may be passed without a list. Each is removed from its original top-level position. Default `None` (the group is created empty). |
+| `parent_grp` | `arcpy.mp.Layer`                              | `None`   | Keyword-only. An existing group layer to nest the new group inside; the new group becomes the topmost entry of that parent group. Default `None` (the new group is added directly to the map, as the topmost entry of the TOC). |
 
 !!! success "Returns"
     `arcpy.mp.Layer`: the newly created group layer, holding any layers passed in `layers`.
@@ -310,6 +321,7 @@ riv = arcsmith.lyr.get(target_map, lyr_name="rivers")[0]
 arcsmith.lyr.add_to_grp(target_map, grp, riv)
 
 # Create a group and fill it in one call
+# (roads ends up above trails, matching the list order top to bottom)
 roads = arcsmith.lyr.get(target_map, lyr_name="roads")[0]
 trails = arcsmith.lyr.get(target_map, lyr_name="trails")[0]
 grp = arcsmith.lyr.make_grp(target_map, "Transport", [roads, trails])
@@ -321,22 +333,83 @@ backcountry = arcsmith.lyr.make_grp(target_map, "Backcountry", parent_grp=trails
 
 ---
 
+## move
+
+Reorders a layer within its current level in the table of contents, relative to a sibling or to the top/bottom of that level.
+
+```python
+move(target_map, layer, *, relative_to=None, placement="BEFORE", position=None) -> arcpy.mp.Layer
+```
+
+Everything after `layer` is keyword-only. The `move` function changes only the order of `layer` among its siblings, the layers that share its level or whichever group it lives in. It does not change grouping; the layer stays in the same container. To move a layer *into* a group, use [`add_to_grp`](#add_to_grp).
+
+Two targeting modes are available and exactly one must be used per call:
+
+| Mode | Arguments | Effect |
+|---|---|---|
+| **Relative** | `relative_to` (+ `placement`) | Drop `layer` just before/after a sibling |
+| **Absolute** | `position` | Send `layer` to the top/bottom of its level |
+
+| Parameter     | Type                   | Default    | Description                                                                                                      |
+|---------------|------------------------|------------|------------------------------------------------------------------------------------------------------------------|
+| `target_map`  | `arcpy.mp.Map`         | required   | Map object containing the layer to move.                                                                         |
+| `layer`       | `arcpy.mp.Layer`       | required   | The layer to reorder.                                                                                            |
+| `relative_to` | `arcpy.mp.Layer`       | `None`     | **Keyword-only.** A sibling layer to position `layer` against. Must share `layer`'s level. Mutually exclusive with `position`. |
+| `placement`   | `'BEFORE'` or `'AFTER'`| `'BEFORE'` | **Keyword-only.** Where to place `layer` relative to `relative_to`. Case-insensitive. Ignored in absolute mode. |
+| `position`    | `'TOP'` or `'BOTTOM'`  | `None`     | **Keyword-only.** Send `layer` to the top or bottom of its current level. Case-insensitive. Mutually exclusive with `relative_to`. |
+
+!!! success "Returns"
+    `arcpy.mp.Layer`: the moved layer (the same object passed in).
+
+!!! failure "Raises"
+    `ValueError` if neither or both of `relative_to` and `position` are provided.
+
+    `ValueError` if `placement` is not `'BEFORE'`/`'AFTER'`, or `position` is not `'TOP'`/`'BOTTOM'`.
+
+    `ValueError` if `relative_to` is not at the same level as `layer`.
+
+!!! note "Order only, not grouping"
+    `move` reorders a layer within its existing level. A layer at the map's top level stays at the top level; a layer inside a group is reordered within that group. An absolute move on a layer already at the requested edge is a no-op. arcpy allows duplicate display names at one level; in the rare case where every sibling shares `layer`'s name, an absolute move is left unchanged rather than guessing.
+
+**Examples**
+
+```python
+roads = arcsmith.lyr.get(target_map, lyr_name="roads")[0]
+rivers = arcsmith.lyr.get(target_map, lyr_name="rivers")[0]
+
+# Move a layer to just above a sibling
+arcsmith.lyr.move(target_map, rivers, relative_to=roads, placement="BEFORE")
+
+# Move a layer to just below a sibling
+arcsmith.lyr.move(target_map, rivers, relative_to=roads, placement="AFTER")
+
+# Send a layer to the top of its current level
+arcsmith.lyr.move(target_map, rivers, position="TOP")
+
+# Send a layer to the bottom of its current level
+arcsmith.lyr.move(target_map, rivers, position="BOTTOM")
+```
+
+---
+
 ## remove
 
 Removes layer(s) of any type (feature, raster, group, …) from the map TOC by layer reference, display name, or data source path.
 
 ```python
-remove(target_map, lyr_name=None, lyr_source=None, geom_type=None, silent=False, *, layer=None) -> list
+remove(target_map, *, lyr_name=None, lyr_source=None, geom_type=None, silent=False, layer=None) -> list
 ```
+
+Every argument after `target_map` is keyword-only.
 
 | Parameter    | Type                                          | Default  | Description                                                                                                     |
 |--------------|-----------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------|
 | `target_map` | `arcpy.mp.Map`                                | required | Map object to remove layer(s) from.                                                                             |
-| `lyr_name`   | `str`                                         | `None`   | Display name to match. All layers with this name are removed.                                                   |
-| `lyr_source` | `str` or `Path`                               | `None`   | Data source path to match. The exact match is removed. Layers without a data source (e.g. group or basemap layers) cannot be matched this way; match those by `lyr_name`. |
-| `geom_type`  | `'Point'`, `'Polyline'`, `'Polygon'`, or `'Multipoint'` | `None`   | Geometry type filter when matching by `lyr_name`. Case-insensitive. Applies to feature layers only. Non-feature layers have no geometry and never match a `geom_type`. Ignored when matching by `lyr_source` or `layer`. |
-| `silent`     | `bool`                                        | `False`  | If `True`, return `0` instead of raising when a name/source match finds nothing. Invalid argument combinations still raise. No effect in `layer` mode. |
-| `layer`      | `arcpy.mp.Layer` or list of `arcpy.mp.Layer`  | `None`   | The exact layer object(s) to remove. **Keyword-only.** No TOC scan or name/source matching is performed. Mutually exclusive with `lyr_name` and `lyr_source`. |
+| `lyr_name`   | `str`                                         | `None`   | **Keyword-only.** Display name to match. All layers with this name are removed.                                 |
+| `lyr_source` | `str` or `Path`                               | `None`   | **Keyword-only.** Data source path to match. The exact match is removed. Layers without a data source (e.g. group or basemap layers) cannot be matched this way; match those by `lyr_name`. |
+| `geom_type`  | `'Point'`, `'Polyline'`, `'Polygon'`, or `'Multipoint'` | `None`   | **Keyword-only.** Geometry type filter when matching by `lyr_name`. Case-insensitive. Applies to feature layers only. Non-feature layers have no geometry and never match a `geom_type`. Ignored when matching by `lyr_source` or `layer`. |
+| `silent`     | `bool`                                        | `False`  | **Keyword-only.** If `True`, return `0` instead of raising when a name/source match finds nothing. Invalid argument combinations still raise. No effect in `layer` mode. |
+| `layer`      | `arcpy.mp.Layer` or list of `arcpy.mp.Layer`  | `None`   | **Keyword-only.** The exact layer object(s) to remove. No TOC scan or name/source matching is performed. Mutually exclusive with `lyr_name` and `lyr_source`. |
 
 !!! success "Returns"
     list of `arcpy.mp.Layer`: all layers that were removed.
@@ -410,7 +483,7 @@ Applies simple fill and stroke symbology to one or more feature layers. No `.lyr
 
 ```python
 simple_sym(lyr=None, *, preset=None,
-           fill_color=UNSET, fill_opacity=UNSET, stroke_color=UNSET, stroke_width=UNSET,
+           fill_color=<omitted>, fill_opacity=<omitted>, stroke_color=<omitted>, stroke_width=<omitted>,
            strict_geom=False,
            target_map=None, lyr_name=None, lyr_source=None, geom_type=None) -> arcpy.mp.Layer | list
 ```
@@ -419,19 +492,19 @@ Every parameter after `lyr` is **keyword-only** (note the `*`), so style and tar
 
 Two targeting modes are available and exactly one must be used per call:
 
-| Mode | Arguments | Returns |
-|---|---|---|
+| Mode             | Arguments | Returns |
+|------------------|---|---|
 | **Layer object** | `lyr` | `arcpy.mp.Layer` |
-| **Map lookup** | `target_map` + `lyr_name` or `lyr_source` | `list of arcpy.mp.Layer` |
+| **Layer lookup** | `target_map` + `lyr_name` or `lyr_source` | `list of arcpy.mp.Layer` |
 
 | Parameter      | Type                           | Default  | Description                                                                                                                        |
 |----------------|--------------------------------|----------|------------------------------------------------------------------------------------------------------------------------------------|
 | `lyr`          | `arcpy.mp.Layer`               | `None`   | A single layer to style directly. Mutually exclusive with `target_map`, `lyr_name`, and `lyr_source`.                             |
 | `preset`       | `str` or `dict`                | `None`   | A registered preset name (a key of `PRESETS`) or a one-off style `dict` using the same keys as the style parameters below. Supplies a bundle of style values; any style parameter passed explicitly overrides the preset. See [Style presets](lyr_presets.md). |
-| `fill_color`   | `tuple[int, int, int]` or `str`| unset    | RGB fill color as `(R, G, B)` or a hex string (`"#ADBCE6"` or `"ADBCE6"`). Applied to Polygon and Point layers. Ignored for Polyline layers. |
-| `fill_opacity` | `int` or `float`               | unset    | Fill opacity as a percentage (0 to 100). Ignored for Polyline layers.                                                              |
-| `stroke_color` | `tuple[int, int, int]` or `str`| unset    | RGB stroke color as `(R, G, B)` or a hex string. Sets the outline on Polygon/Point layers. Sets the line color on Polyline layers. |
-| `stroke_width` | `int` or `float`               | unset    | Stroke/outline width in points.                                                                                                    |
+| `fill_color`   | `tuple[int, int, int]` or `str`| omitted  | RGB fill color as `(R, G, B)` or a hex string (`"#ADBCE6"` or `"ADBCE6"`). Applied to Polygon and Point layers. Ignored for Polyline layers. |
+| `fill_opacity` | `int` or `float`               | omitted  | Fill opacity as a percentage (0 to 100). Ignored for Polyline layers.                                                              |
+| `stroke_color` | `tuple[int, int, int]` or `str`| omitted  | RGB stroke color as `(R, G, B)` or a hex string. Sets the outline on Polygon/Point layers. Sets the line color on Polyline layers. |
+| `stroke_width` | `int` or `float`               | omitted  | Stroke/outline width in points.                                                                                                    |
 | `strict_geom`  | `bool`                         | `False`  | If `True`, enforce a preset's intended geometry (mismatch raises in `lyr` mode, skips in map-lookup mode). If `False` (default), geometry is not enforced and the preset is applied to any geometry via the cross-geometry mapping below. Only presets carrying a `'geom'` key can be enforced. |
 | `target_map`   | `arcpy.mp.Map`                 | `None`   | Map to search when targeting by name or source. Required with `lyr_name` or `lyr_source`.                                         |
 | `lyr_name`     | `str`                          | `None`   | Display name to match. All matching layers are updated. Mutually exclusive with `lyr_source`.                                      |
@@ -465,11 +538,11 @@ Two targeting modes are available and exactly one must be used per call:
 
     A fully transparent fill (`fill_opacity=0`) renders a Polygon or Point as **hollow**. When only `fill_opacity` is supplied and the symbol has no existing fill color to retune, a transparent fallback fill is created so the hollow result is still produced.
 
-!!! note "Unset vs. None"
-    The four style parameters default to *unset*. When unset, the value falls back to the `preset` (if any) and, failing that, the layer's current symbology is left unchanged. Passing `None` explicitly forces "leave unchanged" even when a preset would otherwise set that property. Passing a value applies it, overriding the preset.
+!!! note "Omitted vs. None"
+    The four style parameters default to *omitted* (you do not pass them). When omitted, the value falls back to the `preset` (if any) and, failing that, the layer's current symbology is left unchanged. Passing `None` explicitly forces "leave unchanged" even when a preset would otherwise set that property. Passing a value applies it, overriding the preset. Neither omitting an argument nor passing `None` clears an existing value.
 
 !!! note "Opacity"
-    `fill_opacity` accepts 0 (transparent) to 100 (fully opaque). If set without `fill_color`, the existing RGB is preserved and only the opacity is updated. If left unset (and no preset supplies it), the fill is left exactly as it is. Stroke opacity is always 100.
+    `fill_opacity` accepts 0 (transparent) to 100 (fully opaque). If set without `fill_color`, the existing RGB is preserved and only the opacity is updated. If omitted (and no preset supplies it), the fill is left exactly as it is. Stroke opacity is always 100.
 
 **Examples**
 
@@ -526,7 +599,7 @@ arcsmith.lyr.simple_sym(
 
 A `preset` supplies a bundle of style values under a single name, so a common look can be applied in one argument. Pass a registered name (a key of `PRESETS`) or a one-off style `dict`.
 
-Resolution order is explicit argument, then preset, then leave unchanged. Any style parameter you pass explicitly overrides the preset, anything left unset falls back to the preset, and failing that the layer's current symbology is left unchanged.
+Resolution order is explicit argument, then preset, then leave unchanged. Any style parameter you pass explicitly overrides the preset, anything omitted falls back to the preset, and failing that the layer's current symbology is left unchanged.
 
 Most named presets declare the geometry they were designed for in a `'geom'` key. By default, that key is **advisory**: the preset applies to any geometry, with its properties mapped onto whatever the target supports (a Polygon fills and outlines; a Polyline takes the stroke as its line and drops the fill; a Point styles its marker body and outline). Pass `strict_geom=True` to enforce the declared geometry instead.
 

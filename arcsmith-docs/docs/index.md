@@ -4,9 +4,9 @@ hide:
 ---
 
 <div class="as-hero" markdown>
-<div class="as-hero__eyebrow">ArcPy toolbox utilities</div>
+<div class="as-hero__eyebrow">For tool builders</div>
 <h2 class="as-hero__title">ArcSmith documentation</h2>
-<p class="as-hero__sub">ArcSmith is a Python library for building ArcPy toolboxes. It covers parameter state management, layer output, field mapping, feature-class filtering, table joins, and workspace setup through six focused modules.</p>
+<p class="as-hero__sub">ArcSmith is a Python library for GIS researchers that want to shape rough scripts into polished .pyt tools. ArcSmith covers parameter state management, layer outputs, field mappings, feature-class filtering, table joins, and workspace setup through six focused modules.</p>
 <p class="as-hero__sub" style="margin-bottom:0"><a class="as-hero__link" href="guides/quick_start">Getting started &rarr;</a></p>
 </div>
 
@@ -107,16 +107,17 @@ Named helpers for `updateParameters` and `updateMessages`. Covers parameter stat
 
 ## <a class="as-mod-link" href="reference/lyr">arcsmith<span class="as-mod">.lyr</span></a>
  
-Add layers to a map with optional `.lyrx` symbology, apply symbology to existing layers, apply simple inline fill and stroke, retrieve or remove layers by display name or data source path, and organize layers into group layers.
+Add layers to a map with optional `.lyrx` symbology, apply symbology to existing layers, apply simple inline fill and stroke, retrieve or remove layers by display name or data source path, reorder layers within their level, and organize layers into group layers.
  
 | Function | Description |
 |---|---|
 | [`add`](reference/lyr.md#add) | Add a data source to a map as a new layer, with optional symbology and display name |
 | [`add_to_grp`](reference/lyr.md#add_to_grp) | Move an existing layer into a group layer, with optional precise ordering and removal of the original |
-| [`apply_lyrx`](reference/lyr.md#apply_lyrx) | Apply `.lyrx` symbology to layers already in the map, matched by name or source |
+| [`apply_lyrx`](reference/lyr.md#apply_lyrx) | Apply `.lyrx` symbology to a layer object, or to layers in the map matched by name or source |
 | [`get`](reference/lyr.md#get) | Retrieve layers from the map TOC by display name or data source path |
 | [`get_grp`](reference/lyr.md#get_grp) | Retrieve group layer(s) from the map TOC by display name |
 | [`make_grp`](reference/lyr.md#make_grp) | Create a group layer, optionally moving existing layers into it on creation |
+| [`move`](reference/lyr.md#move) | Reorder a layer within its current TOC level, relative to a sibling or to the top/bottom |
 | [`remove`](reference/lyr.md#remove) | Remove layers of any type from the map TOC by display name or data source path |
 | [`simple_sym`](reference/lyr.md#simple_sym) | Apply simple fill color, fill opacity, stroke color, and stroke width to a layer, or apply a named style preset |
 
