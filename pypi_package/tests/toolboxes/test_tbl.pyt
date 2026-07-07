@@ -9,7 +9,7 @@ involved data operations:
 
     - add_to_map      (add a standalone table to the active map)
     - remove_from_map (remove standalone table(s) from the map)
-    - get_table       (look up standalone table(s) by name/source)
+    - get             (look up standalone table(s) by name/source)
     - from_rows       (table creation + type inference branches)
     - add_rows        (append rows to an existing table via InsertCursor)
     - join_lookup     (table-free 1:1 join; matched/unmatched accounting)
@@ -279,13 +279,13 @@ class RemoveTableFromMap:
 
 
 # ===========================================================================
-# 3. get_table
+# 3. get
 # ===========================================================================
 class GetTable:
     def __init__(self):
         self.label = "03 Get Table"
         self.description = (
-            "Test arcsmith.tbl.get_table - look up standalone tables in the "
+            "Test arcsmith.tbl.get - look up standalone tables in the "
             "active map by display name (all matches) or by data source path "
             "(first match). Exactly one of Name / Source must be provided; a "
             "no-match raises."
@@ -324,7 +324,7 @@ class GetTable:
         table_name = parameters[0].valueAsText or None
         table_source = parameters[1].valueAsText or None
 
-        matched = arcsmith.tbl.get_table(
+        matched = arcsmith.tbl.get(
             m, table_name=table_name, table_source=table_source
         )
         arcpy.AddMessage(f"Matched {len(matched)} table(s):")

@@ -15,6 +15,19 @@ from 1.0.0 onward.
 > control on the project, so entries are reconstructed from the published
 > distributions on PyPI rather than from a commit history.
 
+## [0.0.8]
+
+### Changed
+- **Breaking:** `tbl.get_table` renamed to `tbl.get` for parity with `lyr.get`
+  and the library's terse public-name convention. The signature is otherwise
+  unchanged: `get(target_map, table_name=None, table_source=None)`. Update calls
+  from `tbl.get_table(...)` to `tbl.get(...)`.
+- Functions no longer emit informational `arcpy.AddMessage` output. Progress and
+  result messages (table created, fields added, geodatabase reused, etc.) are
+  left to the calling tool, so the library stays quiet in the geoprocessing pane
+  by default. Return values are unchanged. Data-problem `arcpy.AddWarning`
+  notices (e.g. unmatched join keys, skipped fields) are retained.
+
 ## [0.0.7]
 
 ### Added

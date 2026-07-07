@@ -118,7 +118,7 @@ def get_area(polygon_fc: _PathLike,
     native_units = arcpy.Describe(str(polygon_fc)).spatialReference.linearUnitName
 
     if output_units is None or output_units == native_units:
-        arcpy.AddMessage(f"Polygon area: {native_area} {native_units}^2")
+        # arcpy.AddMessage(f"Polygon area: {native_area} {native_units}^2")
         return native_area, native_units
 
     if native_units not in _TO_METERS:
@@ -133,8 +133,8 @@ def get_area(polygon_fc: _PathLike,
     area_m2 = native_area * (_TO_METERS[native_units] ** 2)
     converted = area_m2 / (_TO_METERS[output_units] ** 2)
 
-    arcpy.AddMessage(f"Polygon area: {converted} {output_units}^2"
-                     f" (converted from {native_area} {native_units}^2)")
+    # arcpy.AddMessage(f"Polygon area: {converted} {output_units}^2"
+    #                  f" (converted from {native_area} {native_units}^2)")
     return converted, output_units
 
 

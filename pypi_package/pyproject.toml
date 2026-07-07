@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "arcsmith"
-version = "0.0.7"
+version = "0.0.8"
 
 description = "A Python library for GIS researchers building Python toolboxes (.pyt)"
 readme = "README.md"
@@ -41,6 +41,10 @@ Issues = "https://github.com/HFM3/arcsmith/issues"
 # Anything else in the build directory (docs site, samples, dist artifacts,
 # caches) cannot be bundled, regardless of .gitignore state or build cwd.
 # This is what 0.0.3 was pulled for.
+#
+# Note: Hatchling force-includes the nearest .gitignore in every sdist and this
+# cannot be disabled via config. A package-local pypi_package/.gitignore keeps
+# it from walking up and bundling the monorepo-root ignore file.
 [tool.hatch.build.targets.sdist]
 include = [
     "src/arcsmith",

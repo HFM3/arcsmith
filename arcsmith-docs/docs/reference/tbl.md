@@ -71,7 +71,7 @@ In-memory tables are handled automatically. A map cannot consume a dataset in th
     `arcpy.mp.Table`: the table object added to the map.
 
 !!! note "Standalone tables are not layers"
-    A standalone table is managed through `Map.listTables()` and `Map.removeTable()`, separate from layers. Use [`get_table`](#get_table) and [`remove_from_map`](#remove_from_map) to retrieve and remove them; the `arcsmith.lyr` helpers operate on layers only.
+    A standalone table is managed through `Map.listTables()` and `Map.removeTable()`, separate from layers. Use [`get`](#get) and [`remove_from_map`](#remove_from_map) to retrieve and remove them; the `arcsmith.lyr` helpers operate on layers only.
 
 **Examples**
 
@@ -159,12 +159,12 @@ arcsmith.tbl.from_rows("C:/data/glacier.gdb/red_buses", rows, ["BUS_ID", "ROUTE"
 
 ---
 
-## get_table
+## get
 
 Retrieves standalone table(s) from a map by display name or data source path. Matching by `table_name` returns all matches; matching by `table_source` returns at most the first match. Exactly one must be provided.
 
 ```python
-get_table(target_map, table_name=None, table_source=None) -> list
+get(target_map, table_name=None, table_source=None) -> list
 ```
 
 | Parameter      | Type            | Default  | Description                                                          |
@@ -183,10 +183,10 @@ get_table(target_map, table_name=None, table_source=None) -> list
 
 ```python
 # Get every standalone table named "areas"
-tables = arcsmith.tbl.get_table(target_map, table_name="areas")
+tables = arcsmith.tbl.get(target_map, table_name="areas")
 
 # Get a single table by data source path
-tables = arcsmith.tbl.get_table(target_map, table_source="C:/data/glacier.gdb/areas")
+tables = arcsmith.tbl.get(target_map, table_source="C:/data/glacier.gdb/areas")
 ```
 
 ---
@@ -339,7 +339,7 @@ remove_from_map(target_map, table_name=None, table_source=None, silent=False, *,
 
 ```python
 # Remove the exact table you grabbed
-areas = arcsmith.tbl.get_table(current_map, table_name="areas")[0]
+areas = arcsmith.tbl.get(current_map, table_name="areas")[0]
 arcsmith.tbl.remove_from_map(current_map, table=areas)
 
 # Remove all tables named "scratch", quietly if none are present

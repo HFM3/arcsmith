@@ -12,7 +12,7 @@ from pathlib import Path, PureWindowsPath
 from ._types import _FieldType, _PathLike
 
 __all__ = ["from_rows", "add_rows", "join_lookup", "join_table",
-           "add_to_map", "remove_from_map", "get_table"]
+           "add_to_map", "remove_from_map", "get"]
 
 # Python type -> arcpy AddField type, used when a field type is inferred from
 # the first non-null value in a column rather than supplied explicitly. Keyed on
@@ -214,7 +214,7 @@ def from_rows(out_table: _PathLike, rows: list, fields: list,
         for r in rows:
             cursor.insertRow(tuple(r))
 
-    arcpy.AddMessage(f"Created table {out_table} with {len(rows)} row(s).")
+    # arcpy.AddMessage(f"Created table {out_table} with {len(rows)} row(s).")
     return str(out_table)
 
 
@@ -315,7 +315,7 @@ def add_rows(target_table: _PathLike, rows: list,
             cursor.insertRow(tuple(r))
             count += 1
 
-    arcpy.AddMessage(f"Appended {count} row(s) to {target_table}.")
+    # arcpy.AddMessage(f"Appended {count} row(s) to {target_table}.")
     return count
 
 
@@ -467,10 +467,10 @@ def join_lookup(input_fc: _PathLike, key_field: str,
             "(e.g. string keys for a text field, integer keys for a numeric one)."
         )
 
-    arcpy.AddMessage(
-        f"join_lookup: populated '{out_field}': {matched} matched, "
-        f"{unmatched} unmatched."
-    )
+    # arcpy.AddMessage(
+    #     f"join_lookup: populated '{out_field}': {matched} matched, "
+    #     f"{unmatched} unmatched."
+    # )
     return {"matched": matched, "unmatched": unmatched}
 
 
@@ -610,10 +610,10 @@ def join_table(input_fc: _PathLike, in_field: str, source_table: _PathLike,
 
     arcpy.management.JoinField(input_fc, in_field, source_table, join_field, transfer)
     n_msg = "all" if transfer is None else str(len(transfer))
-    arcpy.AddMessage(
-        f"join_table: joined {source_table} into {input_fc} on "
-        f"{in_field} = {join_field} ({n_msg} field(s) transferred)."
-    )
+    # arcpy.AddMessage(
+    #     f"join_table: joined {source_table} into {input_fc} on "
+    #     f"{in_field} = {join_field} ({n_msg} field(s) transferred)."
+    # )
     return input_fc
 
 
@@ -730,12 +730,12 @@ def add_to_map(target_map: arcpy.mp.Map,
     if table_name is not None:
         tbl_obj.name = table_name
 
-    arcpy.AddMessage(f"Added standalone table -> {tbl_obj.name}")
+    # arcpy.AddMessage(f"Added standalone table -> {tbl_obj.name}")
     return tbl_obj
 
 
-def get_table(target_map: arcpy.mp.Map, table_name: Optional[str] = None,
-              table_source: Optional[_PathLike] = None) -> list:
+def get(target_map: arcpy.mp.Map, table_name: Optional[str] = None,
+        table_source: Optional[_PathLike] = None) -> list:
     """
     Retrieve standalone table(s) from a map by display name or data source path.
 
@@ -769,11 +769,11 @@ def get_table(target_map: arcpy.mp.Map, table_name: Optional[str] = None,
     --------
     Get every standalone table named "areas":
 
-    >>> tables = arcsmith.tbl.get_table(target_map, table_name="areas")
+    >>> tables = arcsmith.tbl.get(target_map, table_name="areas")
 
     Get a single table by data source path:
 
-    >>> tables = arcsmith.tbl.get_table(target_map, table_source="C:/data/glacier.gdb/areas")
+    >>> tables = arcsmith.tbl.get(target_map, table_source="C:/data/glacier.gdb/areas")
     """
     matched = _match_tables(target_map, table_name=table_name,
                             table_source=table_source)
@@ -831,7 +831,7 @@ def remove_from_map(target_map: arcpy.mp.Map, table_name: Optional[str] = None,
     --------
     Remove the exact table you grabbed:
 
-    >>> areas = arcsmith.tbl.get_table(current_map, table_name="areas")[0]
+    >>> areas = arcsmith.tbl.get(current_map, table_name="areas")[0]
     >>> arcsmith.tbl.remove_from_map(current_map, table=areas)
 
     Remove all tables named "scratch", quietly if none are present:

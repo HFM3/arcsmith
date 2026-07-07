@@ -362,9 +362,26 @@ main {
   display: contents;
 }
 
+/* Anchor wraps both grid cells without generating a box of its own, so the
+   whole row is clickable while the two-column grid layout is preserved. */
+.module-link {
+  display: contents;
+  color: inherit;
+  text-decoration: none;
+}
+
 .module-item:hover .module-tag,
 .module-item:hover .module-desc {
   background: rgba(255,255,255,0.06);
+}
+
+.module-item:hover .module-tag {
+  color: var(--orange);
+}
+
+.module-link .module-tag,
+.module-link .module-desc {
+  cursor: pointer;
 }
 
 .module-tag {
@@ -774,33 +791,45 @@ footer {
     <ul class="module-list">
 
       <li class="module-item">
-        <span class="module-tag">.param</span>
-        <div class="module-desc"><span class="module-label">Parameter module:</span> Helpers for <code class="tag-code">updateParameters</code> covering cascade resets, dropdown menu population, and dynamic grouping of parameters.</div>
+        <a class="module-link" href="/docs/reference/param/">
+          <span class="module-tag">.param</span>
+          <div class="module-desc"><span class="module-label">Parameter module:</span> Helpers for <code class="tag-code">updateParameters</code> covering cascade resets, dropdown menu population, and dynamic grouping of parameters.</div>
+        </a>
       </li>
 
       <li class="module-item">
-        <span class="module-tag">.lyr</span>
-        <div class="module-desc"><span class="module-label">Layer module:</span> Add layers to a map with optional stroke/fill or <code class="tag-code">.lyrx</code> symbology, retrieve or remove layers by name or source, and organize layers into groups.</div>
+        <a class="module-link" href="/docs/reference/lyr/">
+          <span class="module-tag">.lyr</span>
+          <div class="module-desc"><span class="module-label">Layer module:</span> Add layers to a map with optional stroke/fill or <code class="tag-code">.lyrx</code> symbology, retrieve or remove layers by name or source, and organize layers into groups.</div>
+        </a>
       </li>
 
       <li class="module-item">
-        <span class="module-tag">.ws</span>
-        <div class="module-desc"><span class="module-label">Workspace module:</span> Create a geodatabase and its parent folder in one call. Route intermediate outputs to memory or scratch GDB with a single flag.</div>
+        <a class="module-link" href="/docs/reference/ws/">
+          <span class="module-tag">.ws</span>
+          <div class="module-desc"><span class="module-label">Workspace module:</span> Create a geodatabase and its parent folder in one call. Route intermediate outputs to memory or scratch GDB with a single flag.</div>
+        </a>
       </li>
 
       <li class="module-item">
-        <span class="module-tag">.fc</span>
-        <div class="module-desc"><span class="module-label">Feature class module:</span> Create, copy, filter, and export feature classes to a geodatabase with chosen fields, validate geometry types, and compute polygon areas.</div>
+        <a class="module-link" href="/docs/reference/fc/">
+          <span class="module-tag">.fc</span>
+          <div class="module-desc"><span class="module-label">Feature class module:</span> Create, copy, filter, and export feature classes to a geodatabase with chosen fields, validate geometry types, and compute polygon areas.</div>
+        </a>
       </li>
 
       <li class="module-item">
-        <span class="module-tag">.flds</span>
-        <div class="module-desc"><span class="module-label">Fields module:</span> Inspect and edit attribute tables in place, build field mappings, clean and standardize blank values, list column headers or inspect unique column values.</div>
+        <a class="module-link" href="/docs/reference/flds/">
+          <span class="module-tag">.flds</span>
+          <div class="module-desc"><span class="module-label">Fields module:</span> Inspect and edit attribute tables in place, build field mappings, clean and standardize blank values, list column headers or inspect unique column values.</div>
+        </a>
       </li>
 
       <li class="module-item">
-        <span class="module-tag">.tbl</span>
-        <div class="module-desc"><span class="module-label">Table module:</span> Create standalone tables from in-memory rows, populate a field from a key/value lookup with no physical table, and join an external table's columns into a feature class.</div>
+        <a class="module-link" href="/docs/reference/tbl/">
+          <span class="module-tag">.tbl</span>
+          <div class="module-desc"><span class="module-label">Table module:</span> Create standalone tables from in-memory rows, populate a field from a key/value lookup with no physical table, and join an external table's columns into a feature class.</div>
+        </a>
       </li>
 
     </ul>

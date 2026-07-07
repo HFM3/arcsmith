@@ -14,7 +14,7 @@ hide:
 
 <div class="grid cards" markdown>
 
--   arcsmith<span class="as-mod">.param</span>
+-   [arcsmith<span class="as-mod">.param</span>](reference/param.md){ .as-mod-link }
 
     ---
 
@@ -22,7 +22,7 @@ hide:
 
     [:octicons-arrow-right-24: Reference sheet](reference/param.md)
 
--   arcsmith<span class="as-mod">.lyr</span>
+-   [arcsmith<span class="as-mod">.lyr</span>](reference/lyr.md){ .as-mod-link }
 
     ---
 
@@ -30,7 +30,7 @@ hide:
 
     [:octicons-arrow-right-24: Reference sheet](reference/lyr.md)
 
--   arcsmith<span class="as-mod">.ws</span>
+-   [arcsmith<span class="as-mod">.ws</span>](reference/ws.md){ .as-mod-link }
 
     ---
 
@@ -38,7 +38,7 @@ hide:
 
     [:octicons-arrow-right-24: Reference sheet](reference/ws.md)
 
--   arcsmith<span class="as-mod">.fc</span>
+-   [arcsmith<span class="as-mod">.fc</span>](reference/fc.md){ .as-mod-link }
 
     ---
 
@@ -46,7 +46,7 @@ hide:
 
     [:octicons-arrow-right-24: Reference sheet](reference/fc.md)
 
--   arcsmith<span class="as-mod">.flds</span>
+-   [arcsmith<span class="as-mod">.flds</span>](reference/flds.md){ .as-mod-link }
 
     ---
 
@@ -54,7 +54,7 @@ hide:
 
     [:octicons-arrow-right-24: Reference sheet](reference/flds.md)
 
--   arcsmith<span class="as-mod">.tbl</span>
+-   [arcsmith<span class="as-mod">.tbl</span>](reference/tbl.md){ .as-mod-link }
 
     ---
 
@@ -175,7 +175,7 @@ Create standalone tables from in-memory rows, append rows to an existing table, 
 | [`add_rows`](reference/tbl.md#add_rows) | Append rows of Python data to an existing table or feature class |
 | [`add_to_map`](reference/tbl.md#add_to_map) | Add a standalone table to a map's table-of-contents |
 | [`from_rows`](reference/tbl.md#from_rows) | Create a standalone table from an in-memory list of rows, with explicit or inferred field types |
-| [`get_table`](reference/tbl.md#get_table) | Retrieve standalone table(s) from a map by display name or data source path |
+| [`get`](reference/tbl.md#get) | Retrieve standalone table(s) from a map by display name or data source path |
 | [`join_lookup`](reference/tbl.md#join_lookup) | Add a field and populate it from a 1:1 `{key: value}` lookup, with no physical table |
 | [`join_table`](reference/tbl.md#join_table) | Join an external table to a feature class permanently, copying its columns in |
 | [`remove_from_map`](reference/tbl.md#remove_from_map) | Remove standalone table(s) from a map by display name or data source path |

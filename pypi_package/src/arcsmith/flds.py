@@ -241,7 +241,7 @@ def clean_blanks(input_fc: _PathLike, fields: Union[str, list[str]],
     if output_fc is not None:
         arcpy.management.CopyFeatures(str(input_fc), str(output_fc))
         target_fc = str(output_fc)
-        arcpy.AddMessage(f"Copied '{input_fc}' -> {output_fc}")
+        # arcpy.AddMessage(f"Copied '{input_fc}' -> {output_fc}")
     else:
         target_fc = str(input_fc)
 
@@ -528,7 +528,7 @@ def add_fld(input_fc: _PathLike, field: str, field_type: _FieldType, *,
 
     arcpy.management.AddField(input_fc, field, field_type,
                               field_length=length, field_alias=alias)
-    arcpy.AddMessage(f"Added field '{field}' ({field_type}) to {input_fc}.")
+    # arcpy.AddMessage(f"Added field '{field}' ({field_type}) to {input_fc}.")
     return input_fc
 
 
@@ -588,7 +588,7 @@ def rename_fld(input_fc: _PathLike, field: str, new_name: str, *,
 
     arcpy.management.AlterField(input_fc, resolved, new_field_name=new_name,
                                 new_field_alias=new_alias)
-    arcpy.AddMessage(f"Renamed field '{resolved}' to '{new_name}' in {input_fc}.")
+    # arcpy.AddMessage(f"Renamed field '{resolved}' to '{new_name}' in {input_fc}.")
     return input_fc
 
 
@@ -648,5 +648,5 @@ def del_fld(input_fc: _PathLike, fields: Union[str, list]) -> str:
 
     resolved = [field_lookup[f.lower()] for f in field_list]
     arcpy.management.DeleteField(input_fc, resolved)
-    arcpy.AddMessage(f"Deleted {len(resolved)} field(s) from {input_fc}: {resolved}.")
+    # arcpy.AddMessage(f"Deleted {len(resolved)} field(s) from {input_fc}: {resolved}.")
     return input_fc

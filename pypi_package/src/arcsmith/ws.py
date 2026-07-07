@@ -63,12 +63,12 @@ def init_gdb(folder: _PathLike, gdb_name: str, overwrite: bool = False) -> str:
         if overwrite:
             arcpy.management.Delete(str(gdb_path))
         else:
-            arcpy.AddMessage(f"GeoDatabase already exists, reusing: {gdb_path}")
+            # arcpy.AddMessage(f"GeoDatabase already exists, reusing: {gdb_path}")
             return str(gdb_path)
 
     result = arcpy.management.CreateFileGDB(str(folder), f"{gdb_name}.gdb")
     out = result.getOutput(0)
-    arcpy.AddMessage(f"GeoDatabase created: {out}")
+    # arcpy.AddMessage(f"GeoDatabase created: {out}")
 
     return out
 

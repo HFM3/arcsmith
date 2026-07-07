@@ -1214,7 +1214,7 @@ def make_grp(target_map: arcpy.mp.Map, grp_name: str,
         for layer in (layers if isinstance(layers, list) else [layers]):
             add_to_grp(target_map, grp, layer)
 
-    arcpy.AddMessage(f"Group layer created: {grp_name}")
+    # arcpy.AddMessage(f"Group layer created: {grp_name}")
     return grp
 
 

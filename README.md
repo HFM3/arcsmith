@@ -53,7 +53,7 @@ APA, Chicago, and BibTeX formats, kept current with each release, are at
   author  = {Mros, III, Henry F.},
   title   = {ArcSmith: ArcPy Toolbox Utilities},
   year    = {2026},
-  version = {0.0.7},
+  version = {0.0.8},
   url     = {https://pypi.org/project/arcsmith/}
 }
 ```
